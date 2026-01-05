@@ -29,21 +29,23 @@ export default async function ModelDetailPage({ params }: Props) {
     .limit(10)
 
   return (
-    <main className="min-h-screen bg-gray-900 text-white">
-      <div className="container mx-auto px-4 py-8">
-        <div className="mb-8">
-          <Link href="/" className="text-blue-400 hover:underline">Home</Link>
-          <span className="mx-2 text-gray-500">/</span>
-          <Link href="/models" className="text-blue-400 hover:underline">Models</Link>
-          <span className="mx-2 text-gray-500">/</span>
-          <span>{model.display_name}</span>
+    <main className="min-h-screen bg-white text-gray-900">
+      <div className="container mx-auto px-4 py-8 max-w-4xl">
+        <div className="mb-8 text-sm">
+          <Link href="/" className="text-blue-600 hover:underline">Home</Link>
+          <span className="mx-2 text-gray-400">/</span>
+          <Link href="/models" className="text-blue-600 hover:underline">Models</Link>
+          <span className="mx-2 text-gray-400">/</span>
+          <span className="text-gray-600">{model.display_name}</span>
         </div>
 
-        <div className="bg-gray-800 rounded-lg p-6 mb-8">
+        <div className="bg-gray-50 border border-gray-200 rounded-lg p-6 mb-8">
           <div className="flex items-center justify-between mb-4">
             <h1 className="text-3xl font-bold">{model.display_name}</h1>
-            <span className={`px-3 py-1 rounded ${
-              model.backend_type === 'api' ? 'bg-blue-600' : 'bg-green-600'
+            <span className={`px-3 py-1 rounded text-sm ${
+              model.backend_type === 'api' 
+                ? 'bg-blue-100 text-blue-700' 
+                : 'bg-green-100 text-green-700'
             }`}>
               {model.backend_type}
             </span>
@@ -51,16 +53,16 @@ export default async function ModelDetailPage({ params }: Props) {
           
           <div className="grid md:grid-cols-3 gap-4 text-sm">
             <div>
-              <span className="text-gray-400">Provider:</span>
-              <span className="ml-2">{model.provider}</span>
+              <span className="text-gray-500">Provider:</span>
+              <span className="ml-2 text-gray-900">{model.provider}</span>
             </div>
             <div>
-              <span className="text-gray-400">Context Length:</span>
-              <span className="ml-2">{model.context_length?.toLocaleString()} tokens</span>
+              <span className="text-gray-500">Context Length:</span>
+              <span className="ml-2 text-gray-900">{model.context_length?.toLocaleString()} tokens</span>
             </div>
             <div>
-              <span className="text-gray-400">Notes:</span>
-              <span className="ml-2">{model.notes || '-'}</span>
+              <span className="text-gray-500">Notes:</span>
+              <span className="ml-2 text-gray-900">{model.notes || '-'}</span>
             </div>
           </div>
         </div>
@@ -68,38 +70,38 @@ export default async function ModelDetailPage({ params }: Props) {
         <h2 className="text-2xl font-bold mb-4">Recent Runs</h2>
         
         {runs && runs.length > 0 ? (
-          <div className="bg-gray-800 rounded-lg overflow-hidden">
+          <div className="border border-gray-200 rounded-lg overflow-hidden">
             <table className="w-full">
-              <thead className="bg-gray-700">
+              <thead className="bg-gray-50 border-b border-gray-200">
                 <tr>
-                  <th className="px-6 py-3 text-left">Run ID</th>
-                  <th className="px-6 py-3 text-left">Seed</th>
-                  <th className="px-6 py-3 text-left">Status</th>
-                  <th className="px-6 py-3 text-right">Final Score</th>
-                  <th className="px-6 py-3 text-right">Started</th>
+                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Run ID</th>
+                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Seed</th>
+                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Status</th>
+                  <th className="px-6 py-3 text-right text-sm font-semibold text-gray-700">Final Score</th>
+                  <th className="px-6 py-3 text-right text-sm font-semibold text-gray-700">Started</th>
                 </tr>
               </thead>
               <tbody>
                 {runs.map((run) => (
-                  <tr key={run.id} className="border-t border-gray-700">
+                  <tr key={run.id} className="border-b border-gray-100 hover:bg-gray-50">
                     <td className="px-6 py-4">
-                      <Link href={`/runs/${run.id}`} className="text-blue-400 hover:underline">
+                      <Link href={`/runs/${run.id}`} className="text-blue-600 hover:underline">
                         {run.id.slice(0, 8)}...
                       </Link>
                     </td>
-                    <td className="px-6 py-4">{run.seed}</td>
+                    <td className="px-6 py-4 text-gray-600">{run.seed}</td>
                     <td className="px-6 py-4">
                       <span className={`px-2 py-1 text-xs rounded ${
-                        run.status === 'completed' ? 'bg-green-600' :
-                        run.status === 'running' ? 'bg-yellow-600' : 'bg-gray-600'
+                        run.status === 'completed' ? 'bg-green-100 text-green-700' :
+                        run.status === 'running' ? 'bg-yellow-100 text-yellow-700' : 'bg-gray-100 text-gray-600'
                       }`}>
                         {run.status}
                       </span>
                     </td>
-                    <td className="px-6 py-4 text-right">
+                    <td className="px-6 py-4 text-right text-gray-600">
                       {run.final_score?.toLocaleString() || '-'}
                     </td>
-                    <td className="px-6 py-4 text-right text-gray-400">
+                    <td className="px-6 py-4 text-right text-gray-500">
                       {new Date(run.started_at).toLocaleDateString()}
                     </td>
                   </tr>
@@ -108,7 +110,9 @@ export default async function ModelDetailPage({ params }: Props) {
             </table>
           </div>
         ) : (
-          <p className="text-gray-500">No runs yet for this model.</p>
+          <div className="bg-gray-50 border border-gray-200 rounded-lg p-8 text-center">
+            <p className="text-gray-500">No runs yet for this model.</p>
+          </div>
         )}
       </div>
     </main>
