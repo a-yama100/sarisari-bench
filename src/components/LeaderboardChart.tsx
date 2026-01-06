@@ -27,14 +27,6 @@ export function LeaderboardChart({ data }: LeaderboardChartProps) {
     )
   }
 
-  const handleYAxisClick = (data: { value: string }) => {
-    const model = data.value
-    const modelData = data.find((d: ChartDataItem) => d.name === model)
-    if (modelData) {
-      router.push(`/models/${modelData.modelId}`)
-    }
-  }
-
   const CustomYAxisTick = ({ x, y, payload }: { x: number; y: number; payload: { value: string } }) => {
     const modelData = data.find(d => d.name === payload.value)
     const modelId = modelData?.modelId || ''
