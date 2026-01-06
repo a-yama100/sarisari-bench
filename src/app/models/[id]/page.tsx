@@ -10,10 +10,10 @@ interface Props {
   params: Promise<{ id: string }>
 }
 
-// Format number with 2 decimal places
-const formatNumber = (value: number | null) => {
+// Format number as PHP currency
+const formatPeso = (value: number | null) => {
   if (value === null || value === undefined) return '-'
-  return value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+  return '₱' + value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
 }
 
 export default async function ModelDetailPage({ params }: Props) {
@@ -100,7 +100,7 @@ export default async function ModelDetailPage({ params }: Props) {
                         </span>
                       </td>
                       <td className="px-6 py-4 text-right font-mono text-gray-600">
-                        {formatNumber(run.final_score)}
+                        {formatPeso(run.final_score)}
                       </td>
                       <td className="px-6 py-4 text-right text-gray-500">
                         {new Date(run.started_at).toLocaleDateString()}
