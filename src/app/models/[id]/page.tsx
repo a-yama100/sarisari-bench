@@ -75,23 +75,23 @@ export default async function ModelDetailPage({ params }: Props) {
               <table className="w-full min-w-[500px]">
                 <thead className="bg-gray-50 border-b border-gray-200">
                   <tr>
-                    <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Run ID</th>
-                    <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Seed</th>
-                    <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Status</th>
-                    <th className="px-6 py-3 text-right text-sm font-semibold text-gray-700">Final Score</th>
-                    <th className="px-6 py-3 text-right text-sm font-semibold text-gray-700">Started</th>
+                    <th className="px-6 py-3 text-center text-sm font-semibold text-gray-700">Run ID</th>
+                    <th className="px-6 py-3 text-center text-sm font-semibold text-gray-700">Seed</th>
+                    <th className="px-6 py-3 text-center text-sm font-semibold text-gray-700">Status</th>
+                    <th className="px-6 py-3 text-center text-sm font-semibold text-gray-700">Final Score</th>
+                    <th className="px-6 py-3 text-center text-sm font-semibold text-gray-700">Started</th>
                   </tr>
                 </thead>
                 <tbody>
                   {runs.map((run) => (
                     <tr key={run.id} className="border-b border-gray-100 hover:bg-gray-50">
-                      <td className="px-6 py-4">
+                      <td className="px-6 py-4 text-center">
                         <Link href={"/runs/" + run.id} className="text-blue-600 hover:underline">
                           {run.id.slice(0, 8)}...
                         </Link>
                       </td>
-                      <td className="px-6 py-4 text-gray-600">{run.seed}</td>
-                      <td className="px-6 py-4">
+                      <td className="px-6 py-4 text-right font-mono text-gray-600">{run.seed}</td>
+                      <td className="px-6 py-4 text-center">
                         <span className={"px-2 py-1 text-xs rounded " + (
                           run.status === 'completed' ? 'bg-green-100 text-green-700' :
                           run.status === 'running' ? 'bg-yellow-100 text-yellow-700' : 'bg-gray-100 text-gray-600'
