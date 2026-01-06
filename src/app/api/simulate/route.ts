@@ -1,11 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { SimulationEngine } from '@/lib/simulation';
 import { supabaseAdmin } from '@/lib/supabase';
+import { getAIDecision } from '@/lib/ai-provider';
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { modelId, seed, horizonDays = 30, initialCash = 5000 } = body;
+    const { modelId, seed, horizonDays = 30, initialCash = 5000, useAI = true } = body;
 
     if (!modelId) {
       return NextResponse.json({ error: 'modelId is required' }, { status: 400 });
@@ -19,7 +20,7 @@ export async function POST(request: NextRequest) {
         seed: seed || Math.floor(Math.random() * 100000),
         horizon_days: horizonDays,
         status: 'running',
-        config: { initialCash },
+        config: { initialCash, useAI },
       })
       .select()
       .single();
@@ -39,7 +40,19 @@ export async function POST(request: NextRequest) {
 
     // Run simulation for each day
     for (let day = 1; day <= horizonDays; day++) {
-      const actions = generateSimpleActions(engine);
+      const state = engine.getCurrentState();
+      
+      let actions: { type: 'buy'; productId: string; quantity: number }[];
+      
+      if (useAI) {
+        // Use AI to decide actions
+        const decision = await getAIDecision(modelId, state, day, horizonDays);
+        actions = decision.actions;
+      } else {
+        // Fallback to simple random strategy
+        actions = generateSimpleActions(engine);
+      }
+
       const dayState = engine.simulateDay(actions);
 
       // Save daily metrics
