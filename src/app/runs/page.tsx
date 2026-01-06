@@ -1,6 +1,7 @@
 import { supabase } from '@/lib/supabase'
 import Link from 'next/link'
 import { Navbar } from '@/components/Navbar'
+import { Footer } from '@/components/Footer'
 
 export const revalidate = 60
 
@@ -12,9 +13,9 @@ export default async function RunsPage() {
     .limit(50)
 
   return (
-    <main className="min-h-screen bg-white text-gray-900">
+    <main className="min-h-screen bg-white text-gray-900 flex flex-col">
       <Navbar />
-      <div className="container mx-auto px-4 py-8 max-w-4xl">
+      <div className="flex-1 container mx-auto px-4 py-8 max-w-4xl">
         <h1 className="text-3xl font-bold mb-8">All Runs</h1>
 
         {runs && runs.length > 0 ? (
@@ -76,6 +77,7 @@ export default async function RunsPage() {
           </div>
         )}
       </div>
+      <Footer />
     </main>
   )
 }

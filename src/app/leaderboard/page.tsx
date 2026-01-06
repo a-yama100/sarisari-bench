@@ -1,6 +1,7 @@
 import { supabase } from '@/lib/supabase'
 import Link from 'next/link'
 import { Navbar } from '@/components/Navbar'
+import { Footer } from '@/components/Footer'
 
 export const revalidate = 60
 
@@ -53,9 +54,9 @@ export default async function LeaderboardPage() {
   };
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-amber-50 to-orange-50">
+    <main className="min-h-screen bg-gradient-to-b from-amber-50 to-orange-50 flex flex-col">
       <Navbar />
-      <div className="container mx-auto px-4 py-8 max-w-4xl">
+      <div className="flex-1 container mx-auto px-4 py-8 max-w-4xl">
         <h1 className="text-3xl font-bold mb-8 text-gray-800">Leaderboard</h1>
 
         <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
@@ -97,6 +98,7 @@ export default async function LeaderboardPage() {
           Rankings based on average final cash balance after 30-day simulations.
         </p>
       </div>
+      <Footer />
     </main>
   )
 }

@@ -2,6 +2,7 @@ import { supabase } from '@/lib/supabase';
 import Link from 'next/link';
 import { RunChartsWrapper } from '@/components/RunChartsWrapper';
 import { Navbar } from '@/components/Navbar';
+import { Footer } from '@/components/Footer';
 
 interface RunDetail {
   id: string;
@@ -45,9 +46,9 @@ export default async function RunDetailPage({ params }: { params: Promise<{ id: 
 
   if (runError || !run) {
     return (
-      <main className="min-h-screen bg-gradient-to-b from-amber-50 to-orange-50">
+      <main className="min-h-screen bg-gradient-to-b from-amber-50 to-orange-50 flex flex-col">
         <Navbar />
-        <div className="max-w-4xl mx-auto p-8">
+        <div className="flex-1 max-w-4xl mx-auto p-8">
           <div className="bg-white rounded-2xl shadow-lg p-8 text-center">
             <p className="text-red-600 text-lg">Run not found</p>
             <Link href="/runs" className="text-orange-600 hover:underline mt-4 inline-block">
@@ -55,6 +56,7 @@ export default async function RunDetailPage({ params }: { params: Promise<{ id: 
             </Link>
           </div>
         </div>
+        <Footer />
       </main>
     );
   }
@@ -87,9 +89,9 @@ export default async function RunDetailPage({ params }: { params: Promise<{ id: 
   const statusClass = statusColors[typedRun.status] || 'bg-gray-100';
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-amber-50 to-orange-50">
+    <main className="min-h-screen bg-gradient-to-b from-amber-50 to-orange-50 flex flex-col">
       <Navbar />
-      <div className="max-w-4xl mx-auto p-4 md:p-8">
+      <div className="flex-1 max-w-4xl mx-auto p-4 md:p-8">
         <div className="bg-white rounded-2xl shadow-lg p-6 md:p-8 mb-8">
           <div className="flex items-center justify-between mb-6">
             <h1 className="text-2xl md:text-3xl font-bold text-gray-800">Run Details</h1>
@@ -188,6 +190,7 @@ export default async function RunDetailPage({ params }: { params: Promise<{ id: 
           </div>
         )}
       </div>
+      <Footer />
     </main>
   );
 }
