@@ -19,51 +19,53 @@ export default async function RunsPage() {
 
         {runs && runs.length > 0 ? (
           <div className="border border-gray-200 rounded-lg overflow-hidden">
-            <table className="w-full">
-              <thead className="bg-gray-50 border-b border-gray-200">
-                <tr>
-                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Run ID</th>
-                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Model</th>
-                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Seed</th>
-                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Days</th>
-                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Status</th>
-                  <th className="px-6 py-3 text-right text-sm font-semibold text-gray-700">Final Score</th>
-                  <th className="px-6 py-3 text-right text-sm font-semibold text-gray-700">Date</th>
-                </tr>
-              </thead>
-              <tbody>
-                {runs.map((run) => (
-                  <tr key={run.id} className="border-b border-gray-100 hover:bg-gray-50">
-                    <td className="px-6 py-4">
-                      <Link href={`/runs/${run.id}`} className="text-blue-600 hover:underline">
-                        {run.id.slice(0, 8)}...
-                      </Link>
-                    </td>
-                    <td className="px-6 py-4">
-                      <Link href={`/models/${run.model_id}`} className="text-blue-600 hover:underline">
-                        {run.models?.display_name || run.model_id}
-                      </Link>
-                    </td>
-                    <td className="px-6 py-4 text-gray-600">{run.seed}</td>
-                    <td className="px-6 py-4 text-gray-600">{run.horizon_days}</td>
-                    <td className="px-6 py-4">
-                      <span className={`px-2 py-1 text-xs rounded ${
-                        run.status === 'completed' ? 'bg-green-100 text-green-700' :
-                        run.status === 'running' ? 'bg-yellow-100 text-yellow-700' : 'bg-gray-100 text-gray-600'
-                      }`}>
-                        {run.status}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 text-right font-mono text-gray-600">
-                      {run.final_score?.toLocaleString() || '-'}
-                    </td>
-                    <td className="px-6 py-4 text-right text-gray-500">
-                      {new Date(run.started_at).toLocaleDateString()}
-                    </td>
+            <div className="overflow-x-auto">
+              <table className="w-full min-w-[700px]">
+                <thead className="bg-gray-50 border-b border-gray-200">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Run ID</th>
+                    <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Model</th>
+                    <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Seed</th>
+                    <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Days</th>
+                    <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Status</th>
+                    <th className="px-6 py-3 text-right text-sm font-semibold text-gray-700">Final Score</th>
+                    <th className="px-6 py-3 text-right text-sm font-semibold text-gray-700">Date</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {runs.map((run) => (
+                    <tr key={run.id} className="border-b border-gray-100 hover:bg-gray-50">
+                      <td className="px-6 py-4">
+                        <Link href={`/runs/${run.id}`} className="text-blue-600 hover:underline">
+                          {run.id.slice(0, 8)}...
+                        </Link>
+                      </td>
+                      <td className="px-6 py-4">
+                        <Link href={`/models/${run.model_id}`} className="text-blue-600 hover:underline">
+                          {run.models?.display_name || run.model_id}
+                        </Link>
+                      </td>
+                      <td className="px-6 py-4 text-gray-600">{run.seed}</td>
+                      <td className="px-6 py-4 text-gray-600">{run.horizon_days}</td>
+                      <td className="px-6 py-4">
+                        <span className={`px-2 py-1 text-xs rounded ${
+                          run.status === 'completed' ? 'bg-green-100 text-green-700' :
+                          run.status === 'running' ? 'bg-yellow-100 text-yellow-700' : 'bg-gray-100 text-gray-600'
+                        }`}>
+                          {run.status}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 text-right font-mono text-gray-600">
+                        {run.final_score?.toLocaleString() || '-'}
+                      </td>
+                      <td className="px-6 py-4 text-right text-gray-500">
+                        {new Date(run.started_at).toLocaleDateString()}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         ) : (
           <div className="bg-gray-50 border border-gray-200 rounded-lg p-8 text-center">

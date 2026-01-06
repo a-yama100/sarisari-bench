@@ -59,36 +59,38 @@ export default async function LeaderboardPage() {
         <h1 className="text-3xl font-bold mb-8 text-gray-800">Leaderboard</h1>
 
         <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
-          <table className="w-full">
-            <thead className="bg-orange-100 border-b border-orange-200">
-              <tr>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Rank</th>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Model</th>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Provider</th>
-                <th className="px-6 py-4 text-right text-sm font-semibold text-gray-700">Avg Score</th>
-                <th className="px-6 py-4 text-right text-sm font-semibold text-gray-700">Runs</th>
-              </tr>
-            </thead>
-            <tbody>
-              {sortedStats.map((model, index) => (
-                <tr key={model.id} className="border-b border-gray-100 hover:bg-orange-50">
-                  <td className="px-6 py-4 text-gray-600 font-medium">
-                    {model.avg_score !== null ? index + 1 : '-'}
-                  </td>
-                  <td className="px-6 py-4">
-                    <Link href={"/models/" + model.id} className="text-orange-600 hover:underline font-medium">
-                      {model.display_name}
-                    </Link>
-                  </td>
-                  <td className="px-6 py-4 text-gray-600">{model.provider}</td>
-                  <td className="px-6 py-4 text-right font-semibold text-green-600">
-                    {model.avg_score !== null ? formatPeso(model.avg_score) : '-'}
-                  </td>
-                  <td className="px-6 py-4 text-right text-gray-600">{model.run_count}</td>
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[500px]">
+              <thead className="bg-orange-100 border-b border-orange-200">
+                <tr>
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Rank</th>
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Model</th>
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Provider</th>
+                  <th className="px-6 py-4 text-right text-sm font-semibold text-gray-700">Avg Score</th>
+                  <th className="px-6 py-4 text-right text-sm font-semibold text-gray-700">Runs</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {sortedStats.map((model, index) => (
+                  <tr key={model.id} className="border-b border-gray-100 hover:bg-orange-50">
+                    <td className="px-6 py-4 text-gray-600 font-medium">
+                      {model.avg_score !== null ? index + 1 : '-'}
+                    </td>
+                    <td className="px-6 py-4">
+                      <Link href={"/models/" + model.id} className="text-orange-600 hover:underline font-medium">
+                        {model.display_name}
+                      </Link>
+                    </td>
+                    <td className="px-6 py-4 text-gray-600">{model.provider}</td>
+                    <td className="px-6 py-4 text-right font-semibold text-green-600">
+                      {model.avg_score !== null ? formatPeso(model.avg_score) : '-'}
+                    </td>
+                    <td className="px-6 py-4 text-right text-gray-600">{model.run_count}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
 
         <p className="mt-6 text-gray-500 text-sm text-center">
