@@ -16,6 +16,37 @@ interface LeaderboardChartProps {
 
 const COLORS = ['#10b981', '#3b82f6', '#8b5cf6', '#f59e0b', '#ef4444', '#ec4899', '#06b6d4', '#84cc16']
 
+interface CustomTickProps {
+  x: number
+  y: number
+  payload: { value: string }
+  data: ChartDataItem[]
+  onClickLabel: (modelId: string) => void
+}
+
+function CustomYAxisTick({ x, y, payload, data, onClickLabel }: CustomTickProps) {
+  const modelData = data.find(d => d.name === payload.value)
+  const modelId = modelData?.modelId || ''
+  
+  return (
+    <text
+      x={x}
+      y={y}
+      dy={4}
+      textAnchor="end"
+      fontSize={12}
+      fontWeight={500}
+      fill="#3b82f6"
+      style={{ cursor: 'pointer' }}
+      onClick={() => onClickLabel(modelId)}
+      onMouseEnter={(e) => { e.currentTarget.style.textDecoration = 'underline' }}
+      onMouseLeave={(e) => { e.currentTarget.style.textDecoration = 'none' }}
+    >
+      {payload.value}
+    </text>
+  )
+}
+
 export function LeaderboardChart({ data }: LeaderboardChartProps) {
   const router = useRouter()
 
@@ -30,7 +61,13 @@ export function LeaderboardChart({ data }: LeaderboardChartProps) {
   const handleBarClick = (entry: { name?: string }) => {
     const modelData = data.find(d => d.name === entry.name)
     if (modelData) {
-      router.push(`/models/${modelData.modelId}`)
+      router.push('/models/' + modelData.modelId)
+    }
+  }
+
+  const handleLabelClick = (modelId: string) => {
+    if (modelId) {
+      router.push('/models/' + modelId)
     }
   }
 
@@ -41,25 +78,31 @@ export function LeaderboardChart({ data }: LeaderboardChartProps) {
       <div className="overflow-x-auto">
         <div style={{ minWidth: '400px', height: chartHeight }}>
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart 
-              data={data} 
-              layout="vertical" 
+            <BarChart
+              data={data}
+              layout="vertical"
               margin={{ top: 20, right: 30, left: 10, bottom: 5 }}
             >
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis type="number" domain={[0, 'dataMax']} />
-              <YAxis 
-                type="category" 
-                dataKey="name" 
-                width={120} 
-                tick={{ fontSize: 12, fontWeight: 500, fill: '#3b82f6' }}
+              <YAxis
+                type="category"
+                dataKey="name"
+                width={120}
+                tick={(props) => (
+                  <CustomYAxisTick
+                    {...props}
+                    data={data}
+                    onClickLabel={handleLabelClick}
+                  />
+                )}
               />
               <Tooltip
-                formatter={(value) => [`${Number(value).toLocaleString()} PHP`, 'Avg Score']}
-                labelFormatter={(label) => `Model: ${label}`}
+                formatter={(value) => [String(Number(value).toLocaleString()) + ' PHP', 'Avg Score']}
+                labelFormatter={(label) => 'Model: ' + String(label)}
               />
-              <Bar 
-                dataKey="avgScore" 
+              <Bar
+                dataKey="avgScore"
                 name="Average Score"
                 onClick={(data) => handleBarClick(data)}
                 style={{ cursor: 'pointer' }}

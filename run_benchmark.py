@@ -34,7 +34,7 @@ def run_simulation(model_id: str, seed: int, days: int, api_url: str, use_ai: bo
         "useAI": use_ai
     }
     
-    response = requests.post(api_url, json=payload, timeout=300)
+    response = requests.post(api_url, json=payload, timeout=600)
     
     if response.status_code != 200:
         raise Exception(f"API error: {response.status_code} - {response.text}")
