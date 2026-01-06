@@ -24,6 +24,11 @@ interface ModelComparisonChartProps {
 
 const COLORS = ['#10b981', '#3b82f6', '#8b5cf6', '#f59e0b', '#ef4444', '#ec4899', '#06b6d4', '#84cc16', '#14b8a6', '#f43f5e', '#6366f1', '#a855f7', '#22c55e', '#eab308']
 
+// Format number as PHP currency
+const formatPeso = (value: number) => {
+  return '₱' + value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+}
+
 export function ModelComparisonChart({ data }: ModelComparisonChartProps) {
   const router = useRouter()
   const [hoveredModel, setHoveredModel] = useState<string | null>(null)
@@ -73,29 +78,29 @@ export function ModelComparisonChart({ data }: ModelComparisonChartProps) {
   const yMin = Math.floor((minValue - padding) / 100) * 100
   const yMax = Math.ceil((maxValue + padding) / 100) * 100
 
-  const formatValue = (value: number | undefined) => 
-    value !== undefined ? 'PHP ' + value.toLocaleString() : ''
+  const formatTooltipValue = (value: number | undefined) =>
+    value !== undefined ? formatPeso(value) : ''
 
   return (
     <div className="[&_svg]:outline-none [&_*]:outline-none">
       <ResponsiveContainer width="100%" height={400}>
         <LineChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-          <XAxis 
-            dataKey="day" 
+          <XAxis
+            dataKey="day"
             label={{ value: 'Day', position: 'insideBottom', offset: -5 }}
             tick={{ fontSize: 12 }}
             domain={[1, maxDays]}
             ticks={maxDays <= 30 ? [1, 5, 10, 15, 20, 25, 30] : undefined}
           />
-          <YAxis 
+          <YAxis
             label={{ value: 'Cash (PHP)', angle: -90, position: 'insideLeft' }}
-            tickFormatter={(value) => value.toLocaleString()}
+            tickFormatter={(value) => '₱' + value.toLocaleString()}
             tick={{ fontSize: 12 }}
             domain={[yMin, yMax]}
           />
-          <Tooltip 
-            formatter={formatValue}
+          <Tooltip
+            formatter={formatTooltipValue}
             labelFormatter={(label) => 'Day ' + label}
             contentStyle={{ fontSize: 12 }}
           />
@@ -124,8 +129,8 @@ export function ModelComparisonChart({ data }: ModelComparisonChartProps) {
             <button
               key={model.modelId}
               className="flex items-center gap-1.5 px-2 py-1 rounded hover:bg-gray-100 transition-colors"
-              style={{ 
-                opacity: hoveredModel && hoveredModel !== model.modelId ? 0.4 : 1 
+              style={{
+                opacity: hoveredModel && hoveredModel !== model.modelId ? 0.4 : 1
               }}
               onMouseEnter={() => setHoveredModel(model.modelId)}
               onMouseLeave={() => setHoveredModel(null)}
@@ -139,7 +144,7 @@ export function ModelComparisonChart({ data }: ModelComparisonChartProps) {
                 {model.modelName}
               </span>
               <span className="text-xs text-gray-400">
-                ({finalCash.toLocaleString()}{days < 30 ? ' / ' + days + 'd' : ''})
+                ({formatPeso(finalCash)}{days < 30 ? ' / ' + days + 'd' : ''})
               </span>
             </button>
           )
