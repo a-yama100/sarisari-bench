@@ -78,9 +78,8 @@ export default async function Home() {
         </div>
       </div>
 
-      <div className="container mx-auto px-4 py-12 max-w-4xl">
-        <div className="mb-12">
-          <p className="text-gray-600 leading-relaxed">
+      <div className="container mx-auto px-4 py-2 max-w-4xl">
+        <div className="mb-4"><p className="text-gray-600 leading-relaxed">
             Long-term coherence in agents is more important than ever. We expect AI models to soon take
             active part in the economy, managing entire businesses. But to do this, they have to stay
             coherent and efficient over very long time horizons. This is what Sarisari-Bench measures:
