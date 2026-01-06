@@ -9,7 +9,8 @@ import argparse
 import sys
 
 # Configuration
-API_URL = "https://sarisari-bench.phapp.one/api/simulate"
+PROD_API_URL = "https://sarisari-bench.phapp.one/api/simulate"
+LOCAL_API_URL = "http://localhost:3000/api/simulate"
 
 AVAILABLE_MODELS = [
     # API models
@@ -24,15 +25,16 @@ AVAILABLE_MODELS = [
     "llama-3-70b"
 ]
 
-def run_simulation(model_id: str, seed: int, days: int = 30) -> dict:
+def run_simulation(model_id: str, seed: int, days: int, api_url: str, use_ai: bool) -> dict:
     """Run a single simulation"""
     payload = {
         "modelId": model_id,
         "seed": seed,
-        "horizonDays": days
+        "horizonDays": days,
+        "useAI": use_ai
     }
     
-    response = requests.post(API_URL, json=payload)
+    response = requests.post(api_url, json=payload, timeout=300)
     
     if response.status_code != 200:
         raise Exception(f"API error: {response.status_code} - {response.text}")
@@ -46,6 +48,8 @@ def main():
     parser.add_argument("--days", "-d", type=int, default=30, help="Simulation days (default: 30)")
     parser.add_argument("--start-seed", type=int, default=1, help="Starting seed number (default: 1)")
     parser.add_argument("--list", "-l", action="store_true", help="List available models")
+    parser.add_argument("--local", action="store_true", help="Use local API (localhost:3000)")
+    parser.add_argument("--no-ai", action="store_true", help="Use random strategy instead of AI")
     
     args = parser.parse_args()
     
@@ -65,7 +69,13 @@ def main():
         print("Use --list to see available models")
         sys.exit(1)
     
+    api_url = LOCAL_API_URL if args.local else PROD_API_URL
+    use_ai = not args.no_ai
+    mode = "LOCAL" if args.local else "PROD"
+    strategy = "AI" if use_ai else "Random"
+    
     print(f"Running {args.seeds} simulations for {args.model} ({args.days} days each)")
+    print(f"Mode: {mode} | Strategy: {strategy}")
     print("-" * 50)
     
     results = []
@@ -74,7 +84,7 @@ def main():
         print(f"[{i+1}/{args.seeds}] Seed {seed}...", end=" ", flush=True)
         
         try:
-            result = run_simulation(args.model, seed, args.days)
+            result = run_simulation(args.model, seed, args.days, api_url, use_ai)
             score = result.get("finalScore", 0)
             results.append(score)
             print(f"Score: {score:,} PHP")

@@ -38,41 +38,45 @@ const MODEL_CONFIGS: Record<string, ModelConfig> = {
 };
 
 function buildPrompt(state: DayState, day: number, totalDays: number): string {
-  const productList = PRODUCTS.map(p => 
-    `- ${p.id}: ${p.name} (cost: ${p.costPrice} PHP, sell: ${p.sellPrice} PHP, shelf life: ${p.shelfLife} days, popularity: ${p.popularity})`
-  ).join('\n');
+  const topProducts = PRODUCTS
+    .sort((a, b) => b.popularity - a.popularity)
+    .slice(0, 8)
+    .map(p => `- ${p.id}: cost ${p.costPrice}, sell ${p.sellPrice}, profit ${p.sellPrice - p.costPrice}, shelf ${p.shelfLife}d, popularity ${p.popularity}`)
+    .join('\n');
 
   const inventoryList = state.inventory.length > 0
     ? state.inventory.map(i => `- ${i.productId}: ${i.quantity} units (expires day ${i.expiryDay})`).join('\n')
     : '- Empty';
 
-  return `You are managing a sari-sari store in the Philippines. Make purchasing decisions to maximize cash after ${totalDays} days.
+  const totalInventory = state.inventory.reduce((sum, i) => sum + i.quantity, 0);
 
-CURRENT STATUS (Day ${day}/${totalDays}):
-- Cash: ${state.cash} PHP
-- Weather: ${state.weather}
+  return `You manage a sari-sari store. Goal: maximize cash by day ${totalDays}.
+
+DAY ${day}/${totalDays} | Cash: ${state.cash} PHP | Weather: ${state.weather} | Inventory items: ${totalInventory}
 
 INVENTORY:
 ${inventoryList}
 
-AVAILABLE PRODUCTS:
-${productList}
+TOP PRODUCTS (by popularity):
+${topProducts}
 
-RULES:
-1. You can only BUY products (customers come automatically)
-2. Products expire after their shelf life
-3. Weather affects customer traffic (sunny=high, rainy=low, typhoon=very low)
-4. Goal: Maximize cash balance by day ${totalDays}
+CRITICAL RULES:
+- Customers buy automatically each day based on your inventory
+- Products EXPIRE and become worthless after shelf life
+- Weather: sunny=120% sales, cloudy=100%, rainy=70%, typhoon=30%
+- Keep at least 1000 PHP cash reserve for safety
+- Buy small quantities (5-15 units) of high-popularity items
+- If inventory > 50 items, consider NOT buying
 
-Respond with a JSON object containing your purchasing decisions:
-{
-  "actions": [
-    {"type": "buy", "productId": "product_id", "quantity": number}
-  ],
-  "reasoning": "brief explanation"
-}
+STRATEGY TIPS:
+- High popularity items sell faster (less expiry risk)
+- Short shelf life items are risky
+- Near end of simulation (day 25+), stop buying
 
-Only buy if it makes sense. You can return empty actions: {"actions": [], "reasoning": "..."}`;
+Respond ONLY with valid JSON:
+{"actions": [{"type": "buy", "productId": "id", "quantity": N}], "reasoning": "brief"}
+
+To skip buying: {"actions": [], "reasoning": "reason"}`;
 }
 
 async function callOpenAI(prompt: string, config: ModelConfig): Promise<string> {
@@ -88,8 +92,8 @@ async function callOpenAI(prompt: string, config: ModelConfig): Promise<string> 
     body: JSON.stringify({
       model: config.modelName,
       messages: [{ role: 'user', content: prompt }],
-      temperature: 0.7,
-      max_tokens: 500,
+      temperature: 0.3,
+      max_tokens: 300,
     }),
   });
 
@@ -110,7 +114,7 @@ async function callAnthropic(prompt: string, config: ModelConfig): Promise<strin
     },
     body: JSON.stringify({
       model: config.modelName,
-      max_tokens: 500,
+      max_tokens: 300,
       messages: [{ role: 'user', content: prompt }],
     }),
   });
@@ -164,8 +168,8 @@ async function callLMStudio(prompt: string, config: ModelConfig): Promise<string
     body: JSON.stringify({
       model: config.modelName,
       messages: [{ role: 'user', content: prompt }],
-      temperature: 0.7,
-      max_tokens: 500,
+      temperature: 0.3,
+      max_tokens: 300,
     }),
   });
 
@@ -190,6 +194,7 @@ function parseAIResponse(response: string): AIDecision {
       typeof a.productId === 'string' && 
       typeof a.quantity === 'number' &&
       a.quantity > 0 &&
+      a.quantity <= 20 &&
       PRODUCTS.some(p => p.id === a.productId)
     );
 
