@@ -28,6 +28,11 @@ interface ProfitPerformanceChartProps {
 
 const COLORS = ['#10b981', '#3b82f6', '#8b5cf6', '#f59e0b', '#ef4444', '#ec4899', '#06b6d4', '#84cc16', '#14b8a6', '#f43f5e', '#6366f1', '#a855f7']
 
+// Format number as PHP currency
+const formatPeso = (value: number) => {
+  return '₱' + value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+}
+
 // Custom label renderer for inside the bar
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const renderInsideLabel = (props: any) => {
@@ -56,7 +61,7 @@ const renderInsideLabel = (props: any) => {
         fontSize={11}
         fontWeight={500}
       >
-        {Number(value).toLocaleString()} PHP
+        {formatPeso(Number(value))}
       </text>
     </g>
   )
@@ -176,11 +181,11 @@ export function ProfitPerformanceChart({ data, initialCash }: ProfitPerformanceC
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-gray-200">
-              <th className="text-left py-2 px-3 font-semibold text-gray-700">Rank</th>
-              <th className="text-left py-2 px-3 font-semibold text-gray-700">Model</th>
-              <th className="text-right py-2 px-3 font-semibold text-gray-700">Final Cash (PHP)</th>
-              <th className="text-right py-2 px-3 font-semibold text-gray-700">Return</th>
-              <th className="text-right py-2 px-3 font-semibold text-gray-700">Profit (PHP)</th>
+              <th className="text-center py-2 px-3 font-semibold text-gray-700">Rank</th>
+              <th className="text-center py-2 px-3 font-semibold text-gray-700">Model</th>
+              <th className="text-center py-2 px-3 font-semibold text-gray-700">Final Cash (PHP)</th>
+              <th className="text-center py-2 px-3 font-semibold text-gray-700">Return</th>
+              <th className="text-center py-2 px-3 font-semibold text-gray-700">Profit (PHP)</th>
             </tr>
           </thead>
           <tbody>
@@ -193,8 +198,8 @@ export function ProfitPerformanceChart({ data, initialCash }: ProfitPerformanceC
                   className="border-b border-gray-100 hover:bg-gray-50 cursor-pointer transition-colors"
                   onClick={() => router.push('/models/' + item.modelId)}
                 >
-                  <td className="py-2 px-3 text-gray-500">{index + 1}</td>
-                  <td className="py-2 px-3">
+                  <td className="py-2 px-3 text-center text-gray-500">{index + 1}</td>
+                  <td className="py-2 px-3 text-left">
                     <span 
                       className="font-medium hover:underline"
                       style={{ color: COLORS[index % COLORS.length] }}
@@ -202,7 +207,7 @@ export function ProfitPerformanceChart({ data, initialCash }: ProfitPerformanceC
                       {item.name}
                     </span>
                   </td>
-                  <td className="py-2 px-3 text-right font-mono">{item.avgScore.toLocaleString()}</td>
+                  <td className="py-2 px-3 text-right font-mono">{formatPeso(item.avgScore)}</td>
                   <td className="py-2 px-3 text-right">
                     <span className={item.profitPercent >= 100 ? 'font-bold text-green-600' : 'text-red-600'}>
                       {item.profitPercent.toFixed(1)}%
@@ -210,7 +215,7 @@ export function ProfitPerformanceChart({ data, initialCash }: ProfitPerformanceC
                   </td>
                   <td className="py-2 px-3 text-right font-mono">
                     <span className={isProfit ? 'text-green-600' : 'text-red-600'}>
-                      {isProfit ? '+' : ''}{profit.toLocaleString()}
+                      {isProfit ? '+' : ''}{formatPeso(profit)}
                     </span>
                   </td>
                 </tr>
@@ -221,7 +226,7 @@ export function ProfitPerformanceChart({ data, initialCash }: ProfitPerformanceC
       </div>
       
       <div className="mt-4 text-xs text-gray-500 text-center">
-        Initial cash: {initialCash.toLocaleString()} PHP (100%)
+        Initial cash: {formatPeso(initialCash)} (100%)
       </div>
     </div>
   )
