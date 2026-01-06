@@ -1,19 +1,51 @@
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
-import { SimulationForm } from '@/components/SimulationForm'
+import { LeaderboardChart } from '@/components/LeaderboardChart'
 
 export const revalidate = 0
 
-async function getModels() {
-  const { data } = await supabase
+async function getChartData() {
+  const { data: runs } = await supabase
+    .from('runs')
+    .select('id, model_id, seed, final_score')
+    .eq('status', 'completed')
+    .order('model_id')
+  
+  if (!runs || runs.length === 0) return []
+
+  const { data: models } = await supabase
     .from('models')
     .select('id, display_name')
-    .order('display_name')
-  return data || []
+  
+  const modelMap = new Map(models?.map(m => [m.id, m.display_name]) || [])
+
+  const modelScores: Record<string, { scores: number[], name: string }> = {}
+  
+  for (const run of runs) {
+    if (!modelScores[run.model_id]) {
+      modelScores[run.model_id] = {
+        scores: [],
+        name: modelMap.get(run.model_id) || run.model_id
+      }
+    }
+    if (run.final_score !== null) {
+      modelScores[run.model_id].scores.push(Number(run.final_score))
+    }
+  }
+
+  return Object.entries(modelScores)
+    .filter(([, data]) => data.scores.length > 0)
+    .map(([modelId, data]) => ({
+      modelId,
+      name: data.name,
+      avgScore: Math.round(data.scores.reduce((a, b) => a + b, 0) / data.scores.length),
+      runs: data.scores.length
+    }))
+    .sort((a, b) => b.avgScore - a.avgScore)
 }
 
 export default async function Home() {
-  const models = await getModels()
+  const chartData = await getChartData()
 
   return (
     <main className="min-h-screen bg-white text-gray-900">
@@ -47,24 +79,19 @@ export default async function Home() {
       </div>
 
       <div className="container mx-auto px-4 py-12 max-w-4xl">
-        <div className="grid md:grid-cols-2 gap-8 mb-12">
-          <div>
-            <p className="text-gray-600 leading-relaxed">
-              Long-term coherence in agents is more important than ever. We expect AI models to soon take
-              active part in the economy, managing entire businesses. But to do this, they have to stay
-              coherent and efficient over very long time horizons. This is what Sarisari-Bench measures:
-              the ability of models to stay coherent and successfully manage a simulated sari-sari store.
-            </p>
-          </div>
-          <SimulationForm models={models} />
+        <div className="mb-12">
+          <p className="text-gray-600 leading-relaxed">
+            Long-term coherence in agents is more important than ever. We expect AI models to soon take
+            active part in the economy, managing entire businesses. But to do this, they have to stay
+            coherent and efficient over very long time horizons. This is what Sarisari-Bench measures:
+            the ability of models to stay coherent and successfully manage a simulated sari-sari store.
+          </p>
         </div>
 
         <div className="bg-gray-50 border border-gray-200 rounded-lg p-6 mb-12">
-          <h2 className="text-lg font-semibold mb-2">Money balance over time</h2>
-          <p className="text-sm text-gray-500 mb-4">Average across 5 runs</p>
-          <div className="h-64 flex items-center justify-center bg-gray-100 rounded text-gray-400">
-            Chart will appear after benchmark runs
-          </div>
+          <h2 className="text-lg font-semibold mb-2">Model Comparison - Final Cash Balance</h2>
+          <p className="text-sm text-gray-500 mb-4">Average score across all runs (higher is better)</p>
+          <LeaderboardChart data={chartData} />
         </div>
 
         <h2 className="text-2xl font-bold mb-6">Explore</h2>
