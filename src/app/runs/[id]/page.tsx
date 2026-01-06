@@ -79,13 +79,14 @@ export default async function RunDetailPage({ params }: { params: Promise<{ id: 
     return new Intl.NumberFormat('en-PH', {
       style: 'currency',
       currency: 'PHP',
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
     }).format(value);
   };
 
   const totalRevenue = typedMetrics.reduce((sum, m) => sum + (m.revenue || 0), 0);
   const totalProfit = typedMetrics.reduce((sum, m) => sum + (m.profit || 0), 0);
   const totalStockouts = typedMetrics.reduce((sum, m) => sum + (m.stockouts || 0), 0);
-
   const statusClass = statusColors[typedRun.status] || 'bg-gray-100';
 
   return (
@@ -103,7 +104,7 @@ export default async function RunDetailPage({ params }: { params: Promise<{ id: 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 mb-8">
             <div>
               <p className="text-sm text-gray-500">Model</p>
-              <Link href={`/models/${typedRun.model_id}`} className="text-base md:text-lg font-semibold text-blue-600 hover:underline">
+              <Link href={"/models/" + typedRun.model_id} className="text-base md:text-lg font-semibold text-blue-600 hover:underline">
                 {typedRun.models?.display_name || typedRun.model_id}
               </Link>
             </div>
@@ -157,26 +158,26 @@ export default async function RunDetailPage({ params }: { params: Promise<{ id: 
             <div className="bg-white rounded-2xl shadow-lg p-4 md:p-8">
               <h2 className="text-xl font-bold text-gray-800 mb-6">Daily Metrics</h2>
               <div className="overflow-x-auto">
-                <table className="w-full min-w-[600px] text-left">
+                <table className="w-full min-w-[600px]">
                   <thead>
                     <tr className="border-b border-gray-200">
-                      <th className="py-3 px-4 text-sm font-semibold text-gray-600">Day</th>
-                      <th className="py-3 px-4 text-sm font-semibold text-gray-600">Cash</th>
-                      <th className="py-3 px-4 text-sm font-semibold text-gray-600">Revenue</th>
-                      <th className="py-3 px-4 text-sm font-semibold text-gray-600">Profit</th>
-                      <th className="py-3 px-4 text-sm font-semibold text-gray-600">Inventory</th>
-                      <th className="py-3 px-4 text-sm font-semibold text-gray-600">Stockouts</th>
+                      <th className="py-3 px-4 text-left text-sm font-semibold text-gray-600">Day</th>
+                      <th className="py-3 px-4 text-center text-sm font-semibold text-gray-600">Cash</th>
+                      <th className="py-3 px-4 text-center text-sm font-semibold text-gray-600">Revenue</th>
+                      <th className="py-3 px-4 text-center text-sm font-semibold text-gray-600">Profit</th>
+                      <th className="py-3 px-4 text-center text-sm font-semibold text-gray-600">Inventory</th>
+                      <th className="py-3 px-4 text-center text-sm font-semibold text-gray-600">Stockouts</th>
                     </tr>
                   </thead>
                   <tbody>
                     {typedMetrics.map((metric) => (
                       <tr key={metric.id} className="border-b border-gray-100 hover:bg-orange-50">
                         <td className="py-3 px-4 font-medium text-gray-800">Day {metric.day}</td>
-                        <td className="py-3 px-4 text-gray-600">{formatPeso(metric.cash)}</td>
-                        <td className="py-3 px-4 text-green-600">{formatPeso(metric.revenue)}</td>
-                        <td className="py-3 px-4 text-blue-600">{formatPeso(metric.profit)}</td>
-                        <td className="py-3 px-4 text-gray-600">{formatPeso(metric.inventory_value)}</td>
-                        <td className="py-3 px-4 text-red-600">{metric.stockouts}</td>
+                        <td className="py-3 px-4 text-right font-mono text-gray-600">{formatPeso(metric.cash)}</td>
+                        <td className="py-3 px-4 text-right font-mono text-green-600">{formatPeso(metric.revenue)}</td>
+                        <td className="py-3 px-4 text-right font-mono text-blue-600">{formatPeso(metric.profit)}</td>
+                        <td className="py-3 px-4 text-right font-mono text-gray-600">{formatPeso(metric.inventory_value)}</td>
+                        <td className="py-3 px-4 text-right font-mono text-red-600">{metric.stockouts}</td>
                       </tr>
                     ))}
                   </tbody>
