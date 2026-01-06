@@ -28,6 +28,40 @@ interface ProfitPerformanceChartProps {
 
 const COLORS = ['#10b981', '#3b82f6', '#8b5cf6', '#f59e0b', '#ef4444', '#ec4899', '#06b6d4', '#84cc16', '#14b8a6', '#f43f5e', '#6366f1', '#a855f7']
 
+// Custom label renderer for inside the bar
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const renderInsideLabel = (props: any) => {
+  const { x, y, width, height, value } = props
+  if (width < 90) return null
+  
+  const labelX = x + 8
+  const labelY = y + height / 2
+  
+  return (
+    <g>
+      <rect
+        x={labelX}
+        y={labelY - 9}
+        width={74}
+        height={18}
+        fill="rgba(0,0,0,0.7)"
+        rx={3}
+      />
+      <text
+        x={labelX + 37}
+        y={labelY + 1}
+        textAnchor="middle"
+        dominantBaseline="middle"
+        fill="white"
+        fontSize={11}
+        fontWeight={500}
+      >
+        {Number(value).toLocaleString()} PHP
+      </text>
+    </g>
+  )
+}
+
 export function ProfitPerformanceChart({ data, initialCash }: ProfitPerformanceChartProps) {
   const router = useRouter()
 
@@ -96,6 +130,10 @@ export function ProfitPerformanceChart({ data, initialCash }: ProfitPerformanceC
                   position="right" 
                   formatter={formatLabel}
                   style={{ fontSize: 11, fill: '#6b7280' }}
+                />
+                <LabelList 
+                  dataKey="avgScore" 
+                  content={renderInsideLabel}
                 />
               </Bar>
             </BarChart>
