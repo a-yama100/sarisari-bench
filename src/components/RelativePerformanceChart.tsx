@@ -11,7 +11,6 @@ import {
   ResponsiveContainer,
   Cell,
   LabelList,
-  Rectangle,
 } from 'recharts'
 
 interface PerformanceDataItem {
@@ -27,51 +26,6 @@ interface RelativePerformanceChartProps {
 
 const COLORS = ['#10b981', '#3b82f6', '#8b5cf6', '#f59e0b', '#ef4444', '#ec4899', '#06b6d4', '#84cc16', '#14b8a6', '#f43f5e', '#6366f1', '#a855f7']
 
-// Custom bar with PHP label inside
-interface CustomBarProps {
-  x?: number
-  y?: number
-  width?: number
-  height?: number
-  fill?: string
-  payload?: PerformanceDataItem
-  index?: number
-}
-
-const CustomBar = (props: CustomBarProps) => {
-  const { x = 0, y = 0, width = 0, height = 0, fill, payload } = props
-  
-  return (
-    <g>
-      <Rectangle x={x} y={y} width={width} height={height} fill={fill} radius={[0, 4, 4, 0]} />
-      {payload && width > 80 && (
-        <>
-          <rect
-            x={x + 8}
-            y={y + (height - 18) / 2}
-            width={72}
-            height={18}
-            fill="rgba(0,0,0,0.7)"
-            rx={3}
-            ry={3}
-          />
-          <text
-            x={x + 8 + 36}
-            y={y + height / 2 + 1}
-            textAnchor="middle"
-            dominantBaseline="middle"
-            fill="white"
-            fontSize={11}
-            fontWeight={500}
-          >
-            {payload.avgScore.toLocaleString()} PHP
-          </text>
-        </>
-      )}
-    </g>
-  )
-}
-
 export function RelativePerformanceChart({ data }: RelativePerformanceChartProps) {
   const router = useRouter()
 
@@ -83,13 +37,13 @@ export function RelativePerformanceChart({ data }: RelativePerformanceChartProps
     )
   }
 
-  const handleBarClick = (entry: { modelId?: string }) => {
-    if (entry.modelId) {
-      router.push('/models/' + entry.modelId)
-    }
-  }
-
   const chartHeight = Math.max(300, data.length * 45)
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const formatLabel = (value: any) => {
+    const num = Number(value)
+    return isNaN(num) ? '' : num.toFixed(1) + '%'
+  }
 
   return (
     <div className="[&_svg]:outline-none [&_*]:outline-none">
@@ -112,34 +66,28 @@ export function RelativePerformanceChart({ data }: RelativePerformanceChartProps
                 dataKey="name"
                 width={120}
                 tick={{ fontSize: 12, fontWeight: 500, fill: '#3b82f6', cursor: 'pointer' }}
-                onClick={(e) => {
-                  const modelData = data.find(d => d.name === e.value)
-                  if (modelData) {
-                    router.push('/models/' + modelData.modelId)
-                  }
-                }}
               />
               <Tooltip
-                formatter={(value: number, name: string, props: { payload?: PerformanceDataItem }) => {
-                  const score = props.payload?.avgScore || 0
-                  return [value.toFixed(1) + '% (' + score.toLocaleString() + ' PHP)', 'Performance']
-                }}
-                labelFormatter={(label) => 'Model: ' + label}
+                formatter={(value) => [Number(value).toFixed(1) + '%', 'Performance']}
+                labelFormatter={(label) => 'Model: ' + String(label)}
               />
               <Bar
                 dataKey="relativePercent"
                 name="Relative Performance"
-                onClick={(data) => handleBarClick(data)}
                 style={{ cursor: 'pointer' }}
-                shape={(props: CustomBarProps) => <CustomBar {...props} />}
+                radius={[0, 4, 4, 0]}
               >
                 {data.map((entry, index) => (
-                  <Cell key={entry.modelId} fill={COLORS[index % COLORS.length]} />
+                  <Cell 
+                    key={entry.modelId} 
+                    fill={COLORS[index % COLORS.length]}
+                    onClick={() => router.push('/models/' + entry.modelId)}
+                  />
                 ))}
-                <LabelList
-                  dataKey="relativePercent"
-                  position="right"
-                  formatter={(value: number) => value.toFixed(1) + '%'}
+                <LabelList 
+                  dataKey="relativePercent" 
+                  position="right" 
+                  formatter={formatLabel}
                   style={{ fontSize: 11, fill: '#6b7280' }}
                 />
               </Bar>

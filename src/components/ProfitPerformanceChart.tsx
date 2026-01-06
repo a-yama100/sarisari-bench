@@ -10,9 +10,8 @@ import {
   Tooltip,
   ResponsiveContainer,
   Cell,
-  LabelList,
-  Rectangle,
   ReferenceLine,
+  LabelList,
 } from 'recharts'
 
 interface ProfitDataItem {
@@ -29,51 +28,6 @@ interface ProfitPerformanceChartProps {
 
 const COLORS = ['#10b981', '#3b82f6', '#8b5cf6', '#f59e0b', '#ef4444', '#ec4899', '#06b6d4', '#84cc16', '#14b8a6', '#f43f5e', '#6366f1', '#a855f7']
 
-// Custom bar with PHP label inside
-interface CustomBarProps {
-  x?: number
-  y?: number
-  width?: number
-  height?: number
-  fill?: string
-  payload?: ProfitDataItem
-  index?: number
-}
-
-const CustomBar = (props: CustomBarProps) => {
-  const { x = 0, y = 0, width = 0, height = 0, fill, payload } = props
-  
-  return (
-    <g>
-      <Rectangle x={x} y={y} width={width} height={height} fill={fill} radius={[0, 4, 4, 0]} />
-      {payload && width > 80 && (
-        <>
-          <rect
-            x={x + 8}
-            y={y + (height - 18) / 2}
-            width={72}
-            height={18}
-            fill="rgba(0,0,0,0.7)"
-            rx={3}
-            ry={3}
-          />
-          <text
-            x={x + 8 + 36}
-            y={y + height / 2 + 1}
-            textAnchor="middle"
-            dominantBaseline="middle"
-            fill="white"
-            fontSize={11}
-            fontWeight={500}
-          >
-            {payload.avgScore.toLocaleString()} PHP
-          </text>
-        </>
-      )}
-    </g>
-  )
-}
-
 export function ProfitPerformanceChart({ data, initialCash }: ProfitPerformanceChartProps) {
   const router = useRouter()
 
@@ -85,17 +39,17 @@ export function ProfitPerformanceChart({ data, initialCash }: ProfitPerformanceC
     )
   }
 
-  const handleBarClick = (entry: { modelId?: string }) => {
-    if (entry.modelId) {
-      router.push('/models/' + entry.modelId)
-    }
-  }
-
   // Calculate max value for domain
   const maxPercent = Math.max(...data.map(d => d.profitPercent))
   const domainMax = Math.ceil(maxPercent / 10) * 10 + 10
 
   const chartHeight = Math.max(300, data.length * 45)
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const formatLabel = (value: any) => {
+    const num = Number(value)
+    return isNaN(num) ? '' : num.toFixed(1) + '%'
+  }
 
   return (
     <div className="[&_svg]:outline-none [&_*]:outline-none">
@@ -118,35 +72,29 @@ export function ProfitPerformanceChart({ data, initialCash }: ProfitPerformanceC
                 dataKey="name"
                 width={120}
                 tick={{ fontSize: 12, fontWeight: 500, fill: '#3b82f6', cursor: 'pointer' }}
-                onClick={(e) => {
-                  const modelData = data.find(d => d.name === e.value)
-                  if (modelData) {
-                    router.push('/models/' + modelData.modelId)
-                  }
-                }}
               />
               <Tooltip
-                formatter={(value: number, name: string, props: { payload?: ProfitDataItem }) => {
-                  const score = props.payload?.avgScore || 0
-                  return [value.toFixed(1) + '% (' + score.toLocaleString() + ' PHP)', 'Return']
-                }}
-                labelFormatter={(label) => 'Model: ' + label}
+                formatter={(value) => [Number(value).toFixed(1) + '%', 'Return']}
+                labelFormatter={(label) => 'Model: ' + String(label)}
               />
-              <ReferenceLine x={100} stroke="#9ca3af" strokeDasharray="3 3" label={{ value: '100%', position: 'top', fontSize: 10, fill: '#9ca3af' }} />
+              <ReferenceLine x={100} stroke="#9ca3af" strokeDasharray="3 3" />
               <Bar
                 dataKey="profitPercent"
                 name="Return on Investment"
-                onClick={(data) => handleBarClick(data)}
                 style={{ cursor: 'pointer' }}
-                shape={(props: CustomBarProps) => <CustomBar {...props} />}
+                radius={[0, 4, 4, 0]}
               >
                 {data.map((entry, index) => (
-                  <Cell key={entry.modelId} fill={COLORS[index % COLORS.length]} />
+                  <Cell 
+                    key={entry.modelId} 
+                    fill={COLORS[index % COLORS.length]}
+                    onClick={() => router.push('/models/' + entry.modelId)}
+                  />
                 ))}
-                <LabelList
-                  dataKey="profitPercent"
-                  position="right"
-                  formatter={(value: number) => value.toFixed(1) + '%'}
+                <LabelList 
+                  dataKey="profitPercent" 
+                  position="right" 
+                  formatter={formatLabel}
                   style={{ fontSize: 11, fill: '#6b7280' }}
                 />
               </Bar>
