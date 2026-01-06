@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
 import { LeaderboardChart } from '@/components/LeaderboardChart'
+import { HomeNavbar } from '@/components/HomeNavbar'
 
 export const revalidate = 0
 
@@ -10,17 +11,17 @@ async function getChartData() {
     .select('id, model_id, seed, final_score')
     .eq('status', 'completed')
     .order('model_id')
-  
+
   if (!runs || runs.length === 0) return []
 
   const { data: models } = await supabase
     .from('models')
     .select('id, display_name')
-  
+
   const modelMap = new Map(models?.map(m => [m.id, m.display_name]) || [])
 
   const modelScores: Record<string, { scores: number[], name: string }> = {}
-  
+
   for (const run of runs) {
     if (!modelScores[run.model_id]) {
       modelScores[run.model_id] = {
@@ -55,17 +56,7 @@ export default async function Home() {
           style={{ backgroundImage: "url('/images/hero.jpg')" }}
         >
           <div className="absolute inset-0 bg-black/50 rounded-2xl"></div>
-          <div className="relative z-10">
-            <div className="flex items-center space-x-6">
-              <h2 className="text-xl font-bold">Sarisari-Bench</h2>
-              <div className="flex-1 h-px bg-white/50"></div>
-              <nav className="hidden md:flex space-x-6">
-                <Link href="/leaderboard" className="hover:underline">Leaderboard</Link>
-                <Link href="/models" className="hover:underline">Models</Link>
-                <Link href="/runs" className="hover:underline">Runs</Link>
-              </nav>
-            </div>
-          </div>
+          <HomeNavbar />
           <div className="relative z-10">
             <p className="text-sm mb-2">Benchmark</p>
             <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">Sarisari-Bench</h1>
@@ -79,7 +70,8 @@ export default async function Home() {
       </div>
 
       <div className="container mx-auto px-4 py-2 max-w-4xl">
-        <div className="mb-4"><p className="text-gray-600 leading-relaxed">
+        <div className="mb-4">
+          <p className="text-gray-600 leading-relaxed">
             Long-term coherence in agents is more important than ever. We expect AI models to soon take
             active part in the economy, managing entire businesses. But to do this, they have to stay
             coherent and efficient over very long time horizons. This is what Sarisari-Bench measures:
