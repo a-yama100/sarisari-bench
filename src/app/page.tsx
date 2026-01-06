@@ -1,11 +1,13 @@
 import Link from 'next/link'
 import { supabaseAdmin } from '@/lib/supabase'
-import { LeaderboardChart } from '@/components/LeaderboardChart'
 import { ModelComparisonChart } from '@/components/ModelComparisonChart'
+import { ProfitPerformanceChart } from '@/components/ProfitPerformanceChart'
 import { HomeNavbar } from '@/components/HomeNavbar'
 import { Footer } from '@/components/Footer'
 
 export const revalidate = 0
+
+const INITIAL_CASH = 5000
 
 async function getChartData() {
   const { data: runs } = await supabaseAdmin
@@ -47,8 +49,18 @@ async function getChartData() {
     .sort((a, b) => b.avgScore - a.avgScore)
 }
 
+function getProfitPerformanceData(chartData: { modelId: string; name: string; avgScore: number }[]) {
+  if (chartData.length === 0) return []
+  
+  return chartData.map(item => ({
+    modelId: item.modelId,
+    name: item.name,
+    avgScore: item.avgScore,
+    profitPercent: (item.avgScore / INITIAL_CASH) * 100
+  }))
+}
+
 async function getModelComparisonData() {
-  // Get all completed runs
   const { data: runs } = await supabaseAdmin
     .from('runs')
     .select('id, model_id')
@@ -56,14 +68,12 @@ async function getModelComparisonData() {
 
   if (!runs || runs.length === 0) return []
 
-  // Get model names
   const { data: models } = await supabaseAdmin
     .from('models')
     .select('id, display_name')
 
   const modelMap = new Map(models?.map(m => [m.id, m.display_name]) || [])
 
-  // Group runs by model
   const runsByModel: Record<string, string[]> = {}
   for (const run of runs) {
     if (!runsByModel[run.model_id]) {
@@ -72,7 +82,6 @@ async function getModelComparisonData() {
     runsByModel[run.model_id].push(run.id)
   }
 
-  // Fetch metrics for each model separately to avoid limit issues
   const modelDataArray = []
   
   for (const [modelId, runIds] of Object.entries(runsByModel)) {
@@ -84,7 +93,6 @@ async function getModelComparisonData() {
 
     if (!metrics || metrics.length === 0) continue
 
-    // Calculate average cash per day for this model
     const dayTotals: Record<number, { sum: number, count: number }> = {}
     
     for (const metric of metrics) {
@@ -118,6 +126,7 @@ async function getModelComparisonData() {
 export default async function Home() {
   const chartData = await getChartData()
   const comparisonData = await getModelComparisonData()
+  const profitData = getProfitPerformanceData(chartData)
 
   return (
     <main className="min-h-screen bg-white text-gray-900 flex flex-col">
@@ -152,9 +161,9 @@ export default async function Home() {
           </div>
 
           <div className="bg-gray-50 border border-gray-200 rounded-lg p-6 mb-8">
-            <h2 className="text-lg font-semibold mb-2">Model Comparison - Final Cash Balance</h2>
-            <p className="text-sm text-gray-500 mb-4">Average score across all runs (higher is better)</p>
-            <LeaderboardChart data={chartData} />
+            <h2 className="text-lg font-semibold mb-2">Return on Investment</h2>
+            <p className="text-sm text-gray-500 mb-4">Final cash as percentage of initial {INITIAL_CASH.toLocaleString()} PHP (click to view details)</p>
+            <ProfitPerformanceChart data={profitData} initialCash={INITIAL_CASH} />
           </div>
 
           <div className="bg-gray-50 border border-gray-200 rounded-lg p-6 mb-12">
