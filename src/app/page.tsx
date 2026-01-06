@@ -5,7 +5,7 @@ import { ProfitPerformanceChart } from '@/components/ProfitPerformanceChart'
 import { HomeNavbar } from '@/components/HomeNavbar'
 import { Footer } from '@/components/Footer'
 
-export const revalidate = 0
+export const revalidate = 86400 // 24 hours
 
 const INITIAL_CASH = 5000
 
