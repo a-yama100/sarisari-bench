@@ -85,6 +85,36 @@ export function ProfitPerformanceChart({ data, initialCash }: ProfitPerformanceC
     return isNaN(num) ? '' : num.toFixed(1) + '%'
   }
 
+  // Custom Y-axis tick for clickable labels
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const CustomYAxisTick = (props: any) => {
+    const { x, y, payload } = props
+    const modelData = data.find(d => d.name === payload.value)
+    const index = data.findIndex(d => d.name === payload.value)
+    const color = COLORS[index % COLORS.length]
+    
+    return (
+      <g 
+        transform={"translate(" + x + "," + y + ")"}
+        style={{ cursor: 'pointer' }}
+        onClick={() => modelData && router.push('/models/' + modelData.modelId)}
+      >
+        <text
+          x={-5}
+          y={0}
+          dy={4}
+          textAnchor="end"
+          fill={color}
+          fontSize={12}
+          fontWeight={500}
+          style={{ cursor: 'pointer' }}
+        >
+          <tspan className="hover:underline">{payload.value}</tspan>
+        </text>
+      </g>
+    )
+  }
+
   return (
     <div className="[&_svg]:outline-none [&_*]:outline-none">
       <div className="overflow-x-auto">
@@ -105,7 +135,7 @@ export function ProfitPerformanceChart({ data, initialCash }: ProfitPerformanceC
                 type="category"
                 dataKey="name"
                 width={120}
-                tick={{ fontSize: 12, fontWeight: 500, fill: '#3b82f6', cursor: 'pointer' }}
+                tick={<CustomYAxisTick />}
               />
               <Tooltip
                 formatter={(value) => [Number(value).toFixed(1) + '%', 'Return']}
