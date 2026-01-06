@@ -1,13 +1,14 @@
 import Link from 'next/link'
-import { supabase } from '@/lib/supabase'
+import { supabaseAdmin } from '@/lib/supabase'
 import { LeaderboardChart } from '@/components/LeaderboardChart'
+import { ModelComparisonChart } from '@/components/ModelComparisonChart'
 import { HomeNavbar } from '@/components/HomeNavbar'
 import { Footer } from '@/components/Footer'
 
 export const revalidate = 0
 
 async function getChartData() {
-  const { data: runs } = await supabase
+  const { data: runs } = await supabaseAdmin
     .from('runs')
     .select('id, model_id, seed, final_score')
     .eq('status', 'completed')
@@ -15,7 +16,7 @@ async function getChartData() {
 
   if (!runs || runs.length === 0) return []
 
-  const { data: models } = await supabase
+  const { data: models } = await supabaseAdmin
     .from('models')
     .select('id, display_name')
 
@@ -46,8 +47,77 @@ async function getChartData() {
     .sort((a, b) => b.avgScore - a.avgScore)
 }
 
+async function getModelComparisonData() {
+  // Get all completed runs
+  const { data: runs } = await supabaseAdmin
+    .from('runs')
+    .select('id, model_id')
+    .eq('status', 'completed')
+
+  if (!runs || runs.length === 0) return []
+
+  // Get model names
+  const { data: models } = await supabaseAdmin
+    .from('models')
+    .select('id, display_name')
+
+  const modelMap = new Map(models?.map(m => [m.id, m.display_name]) || [])
+
+  // Group runs by model
+  const runsByModel: Record<string, string[]> = {}
+  for (const run of runs) {
+    if (!runsByModel[run.model_id]) {
+      runsByModel[run.model_id] = []
+    }
+    runsByModel[run.model_id].push(run.id)
+  }
+
+  // Fetch metrics for each model separately to avoid limit issues
+  const modelDataArray = []
+  
+  for (const [modelId, runIds] of Object.entries(runsByModel)) {
+    const { data: metrics } = await supabaseAdmin
+      .from('daily_metrics')
+      .select('run_id, day, cash')
+      .in('run_id', runIds)
+      .order('day')
+
+    if (!metrics || metrics.length === 0) continue
+
+    // Calculate average cash per day for this model
+    const dayTotals: Record<number, { sum: number, count: number }> = {}
+    
+    for (const metric of metrics) {
+      const day = metric.day
+      if (!dayTotals[day]) {
+        dayTotals[day] = { sum: 0, count: 0 }
+      }
+      dayTotals[day].sum += Number(metric.cash)
+      dayTotals[day].count += 1
+    }
+
+    const avgCash: number[] = []
+    for (let day = 1; day <= 30; day++) {
+      if (dayTotals[day]) {
+        avgCash.push(Math.round(dayTotals[day].sum / dayTotals[day].count))
+      }
+    }
+
+    if (avgCash.length > 0) {
+      modelDataArray.push({
+        modelId,
+        modelName: modelMap.get(modelId) || modelId,
+        dailyCash: avgCash
+      })
+    }
+  }
+
+  return modelDataArray
+}
+
 export default async function Home() {
   const chartData = await getChartData()
+  const comparisonData = await getModelComparisonData()
 
   return (
     <main className="min-h-screen bg-white text-gray-900 flex flex-col">
@@ -81,10 +151,16 @@ export default async function Home() {
             </p>
           </div>
 
-          <div className="bg-gray-50 border border-gray-200 rounded-lg p-6 mb-12">
+          <div className="bg-gray-50 border border-gray-200 rounded-lg p-6 mb-8">
             <h2 className="text-lg font-semibold mb-2">Model Comparison - Final Cash Balance</h2>
             <p className="text-sm text-gray-500 mb-4">Average score across all runs (higher is better)</p>
             <LeaderboardChart data={chartData} />
+          </div>
+
+          <div className="bg-gray-50 border border-gray-200 rounded-lg p-6 mb-12">
+            <h2 className="text-lg font-semibold mb-2">Cash Balance Over Time</h2>
+            <p className="text-sm text-gray-500 mb-4">Average daily cash balance by model (click legend to view model details)</p>
+            <ModelComparisonChart data={comparisonData} />
           </div>
 
           <h2 className="text-2xl font-bold mb-6">Explore</h2>
