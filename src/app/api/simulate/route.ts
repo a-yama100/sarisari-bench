@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { SimulationEngine } from '@/lib/simulation';
-import { supabase } from '@/lib/supabase';
+import { supabaseAdmin } from '@/lib/supabase';
 
 export async function POST(request: NextRequest) {
   try {
@@ -12,7 +12,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Create a new run record
-    const { data: run, error: runError } = await supabase
+    const { data: run, error: runError } = await supabaseAdmin
       .from('runs')
       .insert({
         model_id: modelId,
@@ -25,7 +25,8 @@ export async function POST(request: NextRequest) {
       .single();
 
     if (runError || !run) {
-      return NextResponse.json({ error: 'Failed to create run' }, { status: 500 });
+      console.error('Run creation error:', runError);
+      return NextResponse.json({ error: 'Failed to create run', details: runError }, { status: 500 });
     }
 
     // Initialize simulation engine
@@ -37,13 +38,12 @@ export async function POST(request: NextRequest) {
     });
 
     // Run simulation for each day
-    // For now, use a simple random buying strategy
     for (let day = 1; day <= horizonDays; day++) {
-      const actions = generateSimpleActions(engine, initialCash);
+      const actions = generateSimpleActions(engine);
       const dayState = engine.simulateDay(actions);
 
       // Save daily metrics
-      await supabase.from('daily_metrics').insert({
+      await supabaseAdmin.from('daily_metrics').insert({
         run_id: run.id,
         day: dayState.day,
         cash: dayState.cash,
@@ -58,7 +58,7 @@ export async function POST(request: NextRequest) {
     const results = engine.getResults();
 
     // Update run with final score
-    await supabase
+    await supabaseAdmin
       .from('runs')
       .update({
         status: 'completed',
@@ -81,11 +81,10 @@ export async function POST(request: NextRequest) {
 }
 
 // Simple random buying strategy (baseline)
-function generateSimpleActions(engine: SimulationEngine, budget: number) {
+function generateSimpleActions(engine: SimulationEngine) {
   const state = engine.getCurrentState();
   const actions: { type: 'buy'; productId: string; quantity: number }[] = [];
-  
-  // Simple strategy: buy random products if cash > 1000
+
   if (state.cash > 1000) {
     const products = ['coke_sakto', 'lucky_me_pancit', 'boy_bawang', 'century_tuna'];
     const randomProduct = products[Math.floor(Math.random() * products.length)];
@@ -100,6 +99,5 @@ function generateSimpleActions(engine: SimulationEngine, budget: number) {
 }
 
 function calculateInventoryValue(inventory: { productId: string; quantity: number }[]) {
-  // Simplified calculation
   return inventory.reduce((sum, item) => sum + item.quantity * 10, 0);
 }
