@@ -1,5 +1,6 @@
 import { supabase } from '@/lib/supabase'
 import Link from 'next/link'
+import { Navbar } from '@/components/Navbar'
 
 export const revalidate = 60
 
@@ -12,13 +13,8 @@ export default async function RunsPage() {
 
   return (
     <main className="min-h-screen bg-white text-gray-900">
+      <Navbar />
       <div className="container mx-auto px-4 py-8 max-w-4xl">
-        <div className="mb-8 text-sm">
-          <Link href="/" className="text-blue-600 hover:underline">Home</Link>
-          <span className="mx-2 text-gray-400">/</span>
-          <span className="text-gray-600">Runs</span>
-        </div>
-
         <h1 className="text-3xl font-bold mb-8">All Runs</h1>
 
         {runs && runs.length > 0 ? (

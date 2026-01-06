@@ -1,6 +1,7 @@
 import { supabase } from '@/lib/supabase';
 import Link from 'next/link';
 import { RunChartsWrapper } from '@/components/RunChartsWrapper';
+import { Navbar } from '@/components/Navbar';
 
 interface RunDetail {
   id: string;
@@ -29,7 +30,6 @@ interface DailyMetric {
 
 export default async function RunDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  
 
   const { data: run, error: runError } = await supabase
     .from('runs')
@@ -45,8 +45,9 @@ export default async function RunDetailPage({ params }: { params: Promise<{ id: 
 
   if (runError || !run) {
     return (
-      <main className="min-h-screen bg-gradient-to-b from-amber-50 to-orange-50 p-8">
-        <div className="max-w-4xl mx-auto">
+      <main className="min-h-screen bg-gradient-to-b from-amber-50 to-orange-50">
+        <Navbar />
+        <div className="max-w-4xl mx-auto p-8">
           <div className="bg-white rounded-2xl shadow-lg p-8 text-center">
             <p className="text-red-600 text-lg">Run not found</p>
             <Link href="/runs" className="text-orange-600 hover:underline mt-4 inline-block">
@@ -86,12 +87,9 @@ export default async function RunDetailPage({ params }: { params: Promise<{ id: 
   const statusClass = statusColors[typedRun.status] || 'bg-gray-100';
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-amber-50 to-orange-50 p-8">
-      <div className="max-w-4xl mx-auto">
-        <Link href="/runs" className="text-orange-600 hover:underline mb-6 inline-block">
-          Back to Runs
-        </Link>
-
+    <main className="min-h-screen bg-gradient-to-b from-amber-50 to-orange-50">
+      <Navbar />
+      <div className="max-w-4xl mx-auto p-8">
         <div className="bg-white rounded-2xl shadow-lg p-8 mb-8">
           <div className="flex items-center justify-between mb-6">
             <h1 className="text-3xl font-bold text-gray-800">Run Details</h1>
@@ -103,7 +101,9 @@ export default async function RunDetailPage({ params }: { params: Promise<{ id: 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
             <div>
               <p className="text-sm text-gray-500">Model</p>
-              <p className="text-lg font-semibold text-gray-800">{typedRun.models?.display_name || typedRun.model_id}</p>
+              <Link href={`/models/${typedRun.model_id}`} className="text-lg font-semibold text-blue-600 hover:underline">
+                {typedRun.models?.display_name || typedRun.model_id}
+              </Link>
             </div>
             <div>
               <p className="text-sm text-gray-500">Seed</p>

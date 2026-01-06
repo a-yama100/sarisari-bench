@@ -1,6 +1,7 @@
 import { supabase } from '@/lib/supabase'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
+import { Navbar } from '@/components/Navbar'
 
 export const revalidate = 60
 
@@ -10,7 +11,7 @@ interface Props {
 
 export default async function ModelDetailPage({ params }: Props) {
   const { id } = await params
-  
+
   const { data: model } = await supabase
     .from('models')
     .select('*')
@@ -30,27 +31,19 @@ export default async function ModelDetailPage({ params }: Props) {
 
   return (
     <main className="min-h-screen bg-white text-gray-900">
+      <Navbar />
       <div className="container mx-auto px-4 py-8 max-w-4xl">
-        <div className="mb-8 text-sm">
-          <Link href="/" className="text-blue-600 hover:underline">Home</Link>
-          <span className="mx-2 text-gray-400">/</span>
-          <Link href="/models" className="text-blue-600 hover:underline">Models</Link>
-          <span className="mx-2 text-gray-400">/</span>
-          <span className="text-gray-600">{model.display_name}</span>
-        </div>
-
         <div className="bg-gray-50 border border-gray-200 rounded-lg p-6 mb-8">
           <div className="flex items-center justify-between mb-4">
             <h1 className="text-3xl font-bold">{model.display_name}</h1>
             <span className={`px-3 py-1 rounded text-sm ${
-              model.backend_type === 'api' 
-                ? 'bg-blue-100 text-blue-700' 
+              model.backend_type === 'api'
+                ? 'bg-blue-100 text-blue-700'
                 : 'bg-green-100 text-green-700'
             }`}>
               {model.backend_type}
             </span>
           </div>
-          
           <div className="grid md:grid-cols-3 gap-4 text-sm">
             <div>
               <span className="text-gray-500">Provider:</span>
@@ -68,7 +61,6 @@ export default async function ModelDetailPage({ params }: Props) {
         </div>
 
         <h2 className="text-2xl font-bold mb-4">Recent Runs</h2>
-        
         {runs && runs.length > 0 ? (
           <div className="border border-gray-200 rounded-lg overflow-hidden">
             <table className="w-full">

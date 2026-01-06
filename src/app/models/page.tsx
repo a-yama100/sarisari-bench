@@ -1,5 +1,6 @@
 import { supabase } from '@/lib/supabase'
 import Link from 'next/link'
+import { Navbar } from '@/components/Navbar'
 
 export const revalidate = 60
 
@@ -11,13 +12,8 @@ export default async function ModelsPage() {
 
   return (
     <main className="min-h-screen bg-white text-gray-900">
+      <Navbar />
       <div className="container mx-auto px-4 py-8 max-w-4xl">
-        <div className="mb-8 text-sm">
-          <Link href="/" className="text-blue-600 hover:underline">Home</Link>
-          <span className="mx-2 text-gray-400">/</span>
-          <span className="text-gray-600">Models</span>
-        </div>
-
         <h1 className="text-3xl font-bold mb-8">Models</h1>
 
         <div className="grid md:grid-cols-2 gap-6">
@@ -30,8 +26,8 @@ export default async function ModelsPage() {
               <div className="flex items-center justify-between mb-2">
                 <h2 className="text-lg font-semibold">{model.display_name}</h2>
                 <span className={`px-2 py-1 text-xs rounded ${
-                  model.backend_type === 'api' 
-                    ? 'bg-blue-100 text-blue-700' 
+                  model.backend_type === 'api'
+                    ? 'bg-blue-100 text-blue-700'
                     : 'bg-green-100 text-green-700'
                 }`}>
                   {model.backend_type}

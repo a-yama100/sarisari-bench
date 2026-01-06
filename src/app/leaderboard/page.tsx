@@ -1,5 +1,6 @@
 import { supabase } from '@/lib/supabase'
 import Link from 'next/link'
+import { Navbar } from '@/components/Navbar'
 
 export const revalidate = 60
 
@@ -12,26 +13,22 @@ interface ModelStats {
 }
 
 export default async function LeaderboardPage() {
-  // Get models with their run statistics
   const { data: models } = await supabase
     .from('models')
     .select('id, display_name, provider')
     .order('display_name')
 
-  // Get completed runs grouped by model
   const { data: runStats } = await supabase
     .from('runs')
     .select('model_id, final_score')
     .eq('status', 'completed')
 
-  // Calculate stats per model
   const modelStats: ModelStats[] = (models || []).map((model) => {
     const modelRuns = (runStats || []).filter((r) => r.model_id === model.id);
     const runCount = modelRuns.length;
     const avgScore = runCount > 0
       ? modelRuns.reduce((sum, r) => sum + (r.final_score || 0), 0) / runCount
       : null;
-
     return {
       id: model.id,
       display_name: model.display_name,
@@ -41,7 +38,6 @@ export default async function LeaderboardPage() {
     };
   });
 
-  // Sort by average score (descending), models with no runs at the bottom
   const sortedStats = modelStats.sort((a, b) => {
     if (a.avg_score === null && b.avg_score === null) return 0;
     if (a.avg_score === null) return 1;
@@ -58,13 +54,8 @@ export default async function LeaderboardPage() {
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-amber-50 to-orange-50">
+      <Navbar />
       <div className="container mx-auto px-4 py-8 max-w-4xl">
-        <div className="mb-8 text-sm">
-          <Link href="/" className="text-orange-600 hover:underline">Home</Link>
-          <span className="mx-2 text-gray-400">/</span>
-          <span className="text-gray-600">Leaderboard</span>
-        </div>
-
         <h1 className="text-3xl font-bold mb-8 text-gray-800">Leaderboard</h1>
 
         <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
