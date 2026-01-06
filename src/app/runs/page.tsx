@@ -5,6 +5,12 @@ import { Footer } from '@/components/Footer'
 
 export const revalidate = 60
 
+// Format number with 2 decimal places
+const formatNumber = (value: number | null) => {
+  if (value === null || value === undefined) return '-'
+  return value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+}
+
 export default async function RunsPage() {
   const { data: runs } = await supabase
     .from('runs')
@@ -17,7 +23,7 @@ export default async function RunsPage() {
       <Navbar />
       <div className="flex-1 container mx-auto px-4 py-8 max-w-4xl">
         <h1 className="text-3xl font-bold mb-8">All Runs</h1>
-
+        
         {runs && runs.length > 0 ? (
           <div className="border border-gray-200 rounded-lg overflow-hidden">
             <div className="overflow-x-auto">
@@ -37,27 +43,27 @@ export default async function RunsPage() {
                   {runs.map((run) => (
                     <tr key={run.id} className="border-b border-gray-100 hover:bg-gray-50">
                       <td className="px-6 py-4">
-                        <Link href={`/runs/${run.id}`} className="text-blue-600 hover:underline">
+                        <Link href={"/runs/" + run.id} className="text-blue-600 hover:underline">
                           {run.id.slice(0, 8)}...
                         </Link>
                       </td>
                       <td className="px-6 py-4">
-                        <Link href={`/models/${run.model_id}`} className="text-blue-600 hover:underline">
+                        <Link href={"/models/" + run.model_id} className="text-blue-600 hover:underline">
                           {run.models?.display_name || run.model_id}
                         </Link>
                       </td>
                       <td className="px-6 py-4 text-gray-600">{run.seed}</td>
                       <td className="px-6 py-4 text-gray-600">{run.horizon_days}</td>
                       <td className="px-6 py-4">
-                        <span className={`px-2 py-1 text-xs rounded ${
+                        <span className={"px-2 py-1 text-xs rounded " + (
                           run.status === 'completed' ? 'bg-green-100 text-green-700' :
                           run.status === 'running' ? 'bg-yellow-100 text-yellow-700' : 'bg-gray-100 text-gray-600'
-                        }`}>
+                        )}>
                           {run.status}
                         </span>
                       </td>
                       <td className="px-6 py-4 text-right font-mono text-gray-600">
-                        {run.final_score?.toLocaleString() || '-'}
+                        {formatNumber(run.final_score)}
                       </td>
                       <td className="px-6 py-4 text-right text-gray-500">
                         {new Date(run.started_at).toLocaleDateString()}

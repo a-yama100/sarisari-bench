@@ -13,6 +13,12 @@ interface ModelStats {
   run_count: number;
 }
 
+// Format number with 2 decimal places
+const formatNumber = (value: number | null) => {
+  if (value === null || value === undefined) return '-'
+  return value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+}
+
 export default async function LeaderboardPage() {
   const { data: models } = await supabase
     .from('models')
@@ -46,19 +52,12 @@ export default async function LeaderboardPage() {
     return b.avg_score - a.avg_score;
   });
 
-  const formatPeso = (value: number) => {
-    return new Intl.NumberFormat('en-PH', {
-      style: 'currency',
-      currency: 'PHP',
-    }).format(value);
-  };
-
   return (
     <main className="min-h-screen bg-gradient-to-b from-amber-50 to-orange-50 flex flex-col">
       <Navbar />
       <div className="flex-1 container mx-auto px-4 py-8 max-w-4xl">
         <h1 className="text-3xl font-bold mb-8 text-gray-800">Leaderboard</h1>
-
+        
         <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full min-w-[500px]">
@@ -67,7 +66,7 @@ export default async function LeaderboardPage() {
                   <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Rank</th>
                   <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Model</th>
                   <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Provider</th>
-                  <th className="px-6 py-4 text-right text-sm font-semibold text-gray-700">Avg Score</th>
+                  <th className="px-6 py-4 text-right text-sm font-semibold text-gray-700">Avg Score (PHP)</th>
                   <th className="px-6 py-4 text-right text-sm font-semibold text-gray-700">Runs</th>
                 </tr>
               </thead>
@@ -83,8 +82,8 @@ export default async function LeaderboardPage() {
                       </Link>
                     </td>
                     <td className="px-6 py-4 text-gray-600">{model.provider}</td>
-                    <td className="px-6 py-4 text-right font-semibold text-green-600">
-                      {model.avg_score !== null ? formatPeso(model.avg_score) : '-'}
+                    <td className="px-6 py-4 text-right font-semibold text-green-600 font-mono">
+                      {formatNumber(model.avg_score)}
                     </td>
                     <td className="px-6 py-4 text-right text-gray-600">{model.run_count}</td>
                   </tr>
@@ -93,7 +92,7 @@ export default async function LeaderboardPage() {
             </table>
           </div>
         </div>
-
+        
         <p className="mt-6 text-gray-500 text-sm text-center">
           Rankings based on average final cash balance after 30-day simulations.
         </p>
