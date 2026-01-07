@@ -19,12 +19,15 @@ const MODEL_CONFIGS: Record<string, ModelConfig> = {
   'gpt-4o': { provider: 'openai', modelName: 'gpt-4o' },
   'gpt-4o-mini': { provider: 'openai', modelName: 'gpt-4o-mini' },
   'gpt-4.1-mini': { provider: 'openai', modelName: 'gpt-4.1-mini' },
+  'gpt-4.1': { provider: 'openai', modelName: 'gpt-4.1' },
   // Anthropic
   'claude-sonnet-4': { provider: 'anthropic', modelName: 'claude-sonnet-4-20250514' },
   'claude-haiku-3.5': { provider: 'anthropic', modelName: 'claude-3-5-haiku-20241022' },
+  'claude-opus-4': { provider: 'anthropic', modelName: 'claude-opus-4-20250514' },
   // Google
   'gemini-2.0-flash': { provider: 'google', modelName: 'gemini-2.0-flash' },
   'gemini-2.5-flash': { provider: 'google', modelName: 'gemini-2.5-flash' },
+  'gemini-2.5-pro': { provider: 'google', modelName: 'gemini-2.5-pro' },
   // Ollama
   'codellama-7b': { provider: 'ollama', modelName: 'codellama:7b', baseUrl: 'http://localhost:11434' },
   'phi3-mini': { provider: 'ollama', modelName: 'phi3:mini', baseUrl: 'http://localhost:11434' },

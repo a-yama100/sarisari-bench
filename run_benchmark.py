@@ -14,9 +14,9 @@ LOCAL_API_URL = "http://localhost:3000/api/simulate"
 
 AVAILABLE_MODELS = [
     # API models
-    "gpt-4o", "gpt-4o-mini", "gpt-4.1-mini",
-    "claude-sonnet-4", "claude-haiku-3.5",
-    "gemini-2.0-flash", "gemini-2.5-flash",
+    "gpt-4o", "gpt-4o-mini", "gpt-4.1-mini", "gpt-4.1",
+    "claude-sonnet-4", "claude-haiku-3.5", "claude-opus-4",
+    "gemini-2.0-flash", "gemini-2.5-flash", "gemini-2.5-pro",
     # Ollama models
     "codellama-7b", "phi3-mini", "llama3.2-3b", "gemma2-2b",
     # LM Studio models
