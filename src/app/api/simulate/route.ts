@@ -6,7 +6,7 @@ import { getAIDecision } from '@/lib/ai-provider';
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { modelId, seed, horizonDays = 30, initialCash = 5000, useAI = true } = body;
+    const { modelId, seed, horizonDays = 30, initialCash = 10000, useAI = true } = body;
 
     if (!modelId) {
       return NextResponse.json({ error: 'modelId is required' }, { status: 400 });

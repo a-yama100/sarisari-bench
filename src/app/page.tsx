@@ -7,7 +7,7 @@ import { Footer } from '@/components/Footer'
 
 export const revalidate = 86400 // 24 hours
 
-const INITIAL_CASH = 5000
+const INITIAL_CASH = 10000
 
 async function getChartData() {
   const { data: runs } = await supabaseAdmin
