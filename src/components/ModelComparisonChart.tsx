@@ -94,7 +94,7 @@ export function ModelComparisonChart({ data }: ModelComparisonChartProps) {
             ticks={maxDays <= 30 ? [1, 5, 10, 15, 20, 25, 30] : undefined}
           />
           <YAxis
-            label={{ value: 'Cash (PHP)', angle: -90, position: 'insideLeft' }}
+            label={{ value: 'Cash (₱)', angle: -90, position: 'insideLeft' }}
             tickFormatter={(value) => '₱' + value.toLocaleString()}
             tick={{ fontSize: 12 }}
             domain={[yMin, yMax]}

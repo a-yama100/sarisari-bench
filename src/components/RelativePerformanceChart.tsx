@@ -103,7 +103,7 @@ export function RelativePerformanceChart({ data }: RelativePerformanceChartProps
             <tr className="border-b border-gray-200">
               <th className="text-left py-2 px-3 font-semibold text-gray-700">Rank</th>
               <th className="text-left py-2 px-3 font-semibold text-gray-700">Model</th>
-              <th className="text-right py-2 px-3 font-semibold text-gray-700">Score (PHP)</th>
+              <th className="text-right py-2 px-3 font-semibold text-gray-700">Score (₱)</th>
               <th className="text-right py-2 px-3 font-semibold text-gray-700">Performance</th>
             </tr>
           </thead>

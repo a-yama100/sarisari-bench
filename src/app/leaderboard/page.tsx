@@ -16,7 +16,7 @@ interface ModelStats {
 // Format number with 2 decimal places
 const formatNumber = (value: number | null) => {
   if (value === null || value === undefined) return '-'
-  return value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+  return "₱" + value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
 }
 
 export default async function LeaderboardPage() {
@@ -64,9 +64,9 @@ export default async function LeaderboardPage() {
               <thead className="bg-orange-100 border-b border-orange-200">
                 <tr>
                   <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Rank</th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Model</th>
+                  <th className="px-6 py-4 text-center text-sm font-semibold text-gray-700">Model</th>
                   <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Provider</th>
-                  <th className="px-6 py-4 text-right text-sm font-semibold text-gray-700">Avg Score (PHP)</th>
+                  <th className="px-6 py-4 text-right text-sm font-semibold text-gray-700">Avg Score</th>
                   <th className="px-6 py-4 text-right text-sm font-semibold text-gray-700">Runs</th>
                 </tr>
               </thead>

@@ -183,9 +183,9 @@ export function ProfitPerformanceChart({ data, initialCash }: ProfitPerformanceC
             <tr className="border-b border-gray-200">
               <th className="text-center py-2 px-3 font-semibold text-gray-700">Rank</th>
               <th className="text-center py-2 px-3 font-semibold text-gray-700">Model</th>
-              <th className="text-center py-2 px-3 font-semibold text-gray-700">Final Cash (PHP)</th>
+              <th className="text-center py-2 px-3 font-semibold text-gray-700">Final Cash (₱)</th>
               <th className="text-center py-2 px-3 font-semibold text-gray-700">Return</th>
-              <th className="text-center py-2 px-3 font-semibold text-gray-700">Profit (PHP)</th>
+              <th className="text-center py-2 px-3 font-semibold text-gray-700">Profit (₱)</th>
             </tr>
           </thead>
           <tbody>

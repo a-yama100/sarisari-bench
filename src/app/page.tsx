@@ -162,7 +162,7 @@ export default async function Home() {
 
           <div className="bg-gray-50 border border-gray-200 rounded-lg p-6 mb-8">
             <h2 className="text-lg font-semibold mb-2">Return on Investment</h2>
-            <p className="text-sm text-gray-500 mb-4">Final cash as percentage of initial {INITIAL_CASH.toLocaleString()} PHP (click to view details)</p>
+            <p className="text-sm text-gray-500 mb-4">Final cash as percentage of initial ₱{INITIAL_CASH.toLocaleString()} (click to view details)</p>
             <ProfitPerformanceChart data={profitData} initialCash={INITIAL_CASH} />
           </div>
 

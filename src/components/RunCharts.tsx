@@ -31,7 +31,7 @@ export function CashChart({ metrics }: RunChartProps) {
     inventory: m.inventory_value,
   }));
 
-  const formatValue = (value: number | undefined) => value !== undefined ? "PHP " + value.toLocaleString() : "";
+  const formatValue = (value: number | undefined) => value !== undefined ? "₱" + value.toLocaleString() : "";
 
   return (
     <div className="bg-white rounded-2xl shadow-lg p-6">
@@ -58,7 +58,7 @@ export function RevenueChart({ metrics }: RunChartProps) {
     profit: m.profit,
   }));
 
-  const formatValue = (value: number | undefined) => value !== undefined ? "PHP " + value.toLocaleString() : "";
+  const formatValue = (value: number | undefined) => value !== undefined ? "₱" + value.toLocaleString() : "";
 
   return (
     <div className="bg-white rounded-2xl shadow-lg p-6">

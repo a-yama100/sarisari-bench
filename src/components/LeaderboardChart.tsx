@@ -98,7 +98,7 @@ export function LeaderboardChart({ data }: LeaderboardChartProps) {
                 )}
               />
               <Tooltip
-                formatter={(value) => [String(Number(value).toLocaleString()) + ' PHP', 'Avg Score']}
+                formatter={(value) => ["₱" + String(Number(value).toLocaleString()), 'Avg Score']}
                 labelFormatter={(label) => 'Model: ' + String(label)}
               />
               <Bar
