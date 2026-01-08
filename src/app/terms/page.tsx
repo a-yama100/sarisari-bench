@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { Navbar } from '@/components/Navbar'
 import { Footer } from '@/components/Footer'
 
 export const metadata = {
@@ -9,6 +10,7 @@ export const metadata = {
 export default function TermsPage() {
   return (
     <main className="min-h-screen bg-white text-gray-900 flex flex-col">
+      <Navbar />
       <div className="flex-1">
         <div className="container mx-auto px-4 py-8 max-w-3xl">
           <div className="mb-6">
