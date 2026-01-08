@@ -9,6 +9,27 @@ export const revalidate = 86400 // 24 hours
 
 const INITIAL_CASH = 10000
 
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Sarisari-Bench",
+  "description": "An AI agent benchmark for managing a sari-sari store in the Philippines. Measure the ability of models to stay coherent and manage a simulated business over 30 days.",
+  "url": "https://sarisari-bench.phapp.one",
+  "applicationCategory": "DeveloperApplication",
+  "operatingSystem": "Web",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  },
+  "author": {
+    "@type": "Organization",
+    "name": "Sarisari-Bench Team"
+  },
+  "datePublished": "2025-01-01",
+  "softwareVersion": "1.0"
+}
+
 async function getChartData() {
   const { data: runs } = await supabaseAdmin
     .from('runs')
@@ -51,7 +72,7 @@ async function getChartData() {
 
 function getProfitPerformanceData(chartData: { modelId: string; name: string; avgScore: number }[]) {
   if (chartData.length === 0) return []
-  
+
   return chartData.map(item => ({
     modelId: item.modelId,
     name: item.name,
@@ -83,7 +104,7 @@ async function getModelComparisonData() {
   }
 
   const modelDataArray = []
-  
+
   for (const [modelId, runIds] of Object.entries(runsByModel)) {
     const { data: metrics } = await supabaseAdmin
       .from('daily_metrics')
@@ -94,7 +115,6 @@ async function getModelComparisonData() {
     if (!metrics || metrics.length === 0) continue
 
     const dayTotals: Record<number, { sum: number, count: number }> = {}
-    
     for (const metric of metrics) {
       const day = metric.day
       if (!dayTotals[day]) {
@@ -130,6 +150,10 @@ export default async function Home() {
 
   return (
     <main className="min-h-screen bg-white text-gray-900 flex flex-col">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <div className="flex-1">
         <div className="p-2 md:p-4">
           <div
@@ -162,7 +186,7 @@ export default async function Home() {
 
           <div className="bg-gray-50 border border-gray-200 rounded-lg p-6 mb-8">
             <h2 className="text-lg font-semibold mb-2">Return on Investment</h2>
-            <p className="text-sm text-gray-500 mb-4">Final cash as percentage of initial ₱{INITIAL_CASH.toLocaleString()} (click to view details)</p>
+            <p className="text-sm text-gray-500 mb-4">Final cash as percentage of initial \u20b1{INITIAL_CASH.toLocaleString()} (click to view details)</p>
             <ProfitPerformanceChart data={profitData} initialCash={INITIAL_CASH} />
           </div>
 
@@ -173,6 +197,7 @@ export default async function Home() {
           </div>
 
           <h2 className="text-2xl font-bold mb-6">Explore</h2>
+
           <div className="grid md:grid-cols-3 gap-6 mb-12">
             <Link href="/leaderboard" className="block p-6 bg-gray-50 border border-gray-200 rounded-lg hover:border-gray-400 transition">
               <h3 className="text-lg font-semibold mb-2">Leaderboard</h3>
