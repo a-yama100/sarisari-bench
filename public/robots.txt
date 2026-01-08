@@ -1,0 +1,4 @@
+﻿User-agent: *
+Allow: /
+
+Sitemap: https://sarisari-bench.phapp.one/sitemap.xml
