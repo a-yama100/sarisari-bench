@@ -1,6 +1,7 @@
+import Link from 'next/link'
+
 export function Footer() {
   const currentYear = new Date().getFullYear()
-
   return (
     <footer className="bg-gray-900 text-gray-300">
       <div className="max-w-6xl mx-auto px-4 py-8">
@@ -9,16 +10,28 @@ export function Footer() {
             {currentYear} Sarisari-Bench. All rights reserved.
           </div>
           <div className="flex flex-col sm:flex-row gap-4 text-sm">
-            <a
-              href="https://substack.com/@aifieldtest"
+            <Link
+              href="/privacy"
+              className="hover:text-white transition-colors"
+            >
+              Privacy Policy
+            </Link>
+            <Link
+              href="/terms"
+              className="hover:text-white transition-colors"
+            >
+              Terms of Service
+            </Link>
+            
+            <a href="https://substack.com/@aifieldtest"
               target="_blank"
               rel="noopener noreferrer"
               className="hover:text-white transition-colors"
             >
               AI Field Test Manila Edition
             </a>
-            <a
-              href="https://tools.aifieldtest.com/"
+            
+            <a href="https://tools.aifieldtest.com/"
               target="_blank"
               rel="noopener noreferrer"
               className="hover:text-white transition-colors"
