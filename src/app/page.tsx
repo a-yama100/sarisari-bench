@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import Image from 'next/image'
 import { supabaseAdmin } from '@/lib/supabase'
 import { ModelComparisonChart } from '@/components/ModelComparisonChart'
 import { ProfitPerformanceChart } from '@/components/ProfitPerformanceChart'
@@ -230,10 +231,15 @@ export default async function Home() {
       />
       <div className="flex-1">
         <div className="p-2 md:p-4">
-          <div
-            className="rounded-2xl min-h-80 md:min-h-96 w-full bg-cover bg-center p-6 md:px-16 md:py-12 text-white flex flex-col justify-between relative"
-            style={{ backgroundImage: "url('/images/hero.jpg')" }}
-          >
+          <div className="rounded-2xl min-h-80 md:min-h-96 w-full p-6 md:px-16 md:py-12 text-white flex flex-col justify-between relative overflow-hidden">
+            <Image
+              src="/images/hero.jpg"
+              alt="Sari-sari store in the Philippines"
+              fill
+              priority
+              className="object-cover"
+              sizes="100vw"
+            />
             <div className="absolute inset-0 bg-black/50 rounded-2xl"></div>
             <HomeNavbar />
             <div className="relative z-10">
