@@ -30,6 +30,53 @@ const jsonLd = {
   "softwareVersion": "1.0"
 }
 
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "What is Sarisari-Bench?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Sarisari-Bench is an AI agent benchmark that simulates managing a sari-sari store (small neighborhood store) in the Philippines. It evaluates how well AI models can make coherent business decisions over a 30-day period."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How does the benchmark work?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Each AI model starts with 10,000 PHP and must manage inventory, handle customer demand, and make purchasing decisions over 30 simulated days. The primary metric is the final cash balance, measuring profitability and decision-making quality."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Which AI models are supported?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Sarisari-Bench supports major API models (GPT-4o, Claude, Gemini) and local LLMs via Ollama and LM Studio, including Llama, Phi, CodeLlama, and Gemma models."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What is a sari-sari store?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "A sari-sari store is a small neighborhood convenience store commonly found in the Philippines. They sell everyday items like snacks, drinks, canned goods, and household essentials in small quantities."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How can I run the benchmark myself?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "You can clone the repository from GitHub and use the provided Python scripts (run_benchmark.py) to test models locally with your own API keys or local LLM setup."
+      }
+    }
+  ]
+}
+
 async function getChartData() {
   const { data: runs } = await supabaseAdmin
     .from('runs')
@@ -143,6 +190,29 @@ async function getModelComparisonData() {
   return modelDataArray
 }
 
+const faqItems = [
+  {
+    question: "What is Sarisari-Bench?",
+    answer: "Sarisari-Bench is an AI agent benchmark that simulates managing a sari-sari store (small neighborhood store) in the Philippines. It evaluates how well AI models can make coherent business decisions over a 30-day period."
+  },
+  {
+    question: "How does the benchmark work?",
+    answer: "Each AI model starts with 10,000 PHP and must manage inventory, handle customer demand, and make purchasing decisions over 30 simulated days. The primary metric is the final cash balance, measuring profitability and decision-making quality."
+  },
+  {
+    question: "Which AI models are supported?",
+    answer: "Sarisari-Bench supports major API models (GPT-4o, Claude, Gemini) and local LLMs via Ollama and LM Studio, including Llama, Phi, CodeLlama, and Gemma models."
+  },
+  {
+    question: "What is a sari-sari store?",
+    answer: "A sari-sari store is a small neighborhood convenience store commonly found in the Philippines. They sell everyday items like snacks, drinks, canned goods, and household essentials in small quantities."
+  },
+  {
+    question: "How can I run the benchmark myself?",
+    answer: "You can clone the repository from GitHub and use the provided Python scripts (run_benchmark.py) to test models locally with your own API keys or local LLM setup."
+  }
+]
+
 export default async function Home() {
   const chartData = await getChartData()
   const comparisonData = await getModelComparisonData()
@@ -153,6 +223,10 @@ export default async function Home() {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
       />
       <div className="flex-1">
         <div className="p-2 md:p-4">
@@ -211,6 +285,18 @@ export default async function Home() {
               <h3 className="text-lg font-semibold mb-2">Runs</h3>
               <p className="text-gray-600 text-sm">Explore individual run details</p>
             </Link>
+          </div>
+
+          <div className="mb-12">
+            <h2 className="text-2xl font-bold mb-6">Frequently Asked Questions</h2>
+            <div className="space-y-4">
+              {faqItems.map((item, index) => (
+                <div key={index} className="bg-gray-50 border border-gray-200 rounded-lg p-5">
+                  <h3 className="font-semibold text-gray-900 mb-2">{item.question}</h3>
+                  <p className="text-gray-600 text-sm leading-relaxed">{item.answer}</p>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>
