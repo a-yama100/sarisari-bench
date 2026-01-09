@@ -54,7 +54,7 @@ export function SimulationForm({ models }: SimulationFormProps) {
   };
 
   const formatPeso = (value: number) => {
-    return '\u20b1' + value.toLocaleString();
+    return '₱' + value.toLocaleString();
   };
 
   return (
