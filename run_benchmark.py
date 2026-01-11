@@ -3,7 +3,6 @@
 Sarisari-Bench Local Runner
 Run simulations locally and upload results to Supabase
 """
-
 import requests
 import argparse
 import sys
@@ -13,14 +12,24 @@ PROD_API_URL = "https://sarisari-bench.phapp.one/api/simulate"
 LOCAL_API_URL = "http://localhost:3000/api/simulate"
 
 AVAILABLE_MODELS = [
-    # API models
+    # API models - OpenAI
     "gpt-4o", "gpt-4o-mini", "gpt-4.1-mini", "gpt-4.1",
+    
+    # API models - Anthropic
     "claude-sonnet-4", "claude-haiku-3.5", "claude-opus-4",
+    
+    # API models - Google
     "gemini-2.0-flash", "gemini-2.5-flash", "gemini-2.5-pro",
+    
+    # API models - xAI (Grok)
+    "grok-4-1-fast", "grok-4-fast", "grok-3", "grok-3-mini",
+    
     # Ollama models
     "codellama-7b", "phi3-mini", "llama3.2-3b", "gemma2-2b",
+    
     # LM Studio models
     "lmstudio-llama3.2-1b", "lmstudio-gemma3n",
+    
     # Other local
     "llama-3-70b"
 ]
@@ -55,8 +64,27 @@ def main():
     
     if args.list:
         print("Available models:")
-        for m in AVAILABLE_MODELS:
-            print(f"  - {m}")
+        print("\n  OpenAI:")
+        for m in ["gpt-4o", "gpt-4o-mini", "gpt-4.1-mini", "gpt-4.1"]:
+            print(f"    - {m}")
+        print("\n  Anthropic:")
+        for m in ["claude-sonnet-4", "claude-haiku-3.5", "claude-opus-4"]:
+            print(f"    - {m}")
+        print("\n  Google:")
+        for m in ["gemini-2.0-flash", "gemini-2.5-flash", "gemini-2.5-pro"]:
+            print(f"    - {m}")
+        print("\n  xAI (Grok):")
+        for m in ["grok-4-1-fast", "grok-4-fast", "grok-3", "grok-3-mini"]:
+            print(f"    - {m}")
+        print("\n  Ollama:")
+        for m in ["codellama-7b", "phi3-mini", "llama3.2-3b", "gemma2-2b"]:
+            print(f"    - {m}")
+        print("\n  LM Studio:")
+        for m in ["lmstudio-llama3.2-1b", "lmstudio-gemma3n"]:
+            print(f"    - {m}")
+        print("\n  Other:")
+        for m in ["llama-3-70b"]:
+            print(f"    - {m}")
         return
     
     if not args.model:

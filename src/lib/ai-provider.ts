@@ -8,7 +8,7 @@ export interface AIDecision {
 }
 
 interface ModelConfig {
-  provider: 'openai' | 'anthropic' | 'google' | 'ollama' | 'lmstudio';
+  provider: 'openai' | 'anthropic' | 'google' | 'ollama' | 'lmstudio' | 'xai';
   modelName: string;
   apiKey?: string;
   baseUrl?: string;
@@ -20,22 +20,33 @@ const MODEL_CONFIGS: Record<string, ModelConfig> = {
   'gpt-4o-mini': { provider: 'openai', modelName: 'gpt-4o-mini' },
   'gpt-4.1-mini': { provider: 'openai', modelName: 'gpt-4.1-mini' },
   'gpt-4.1': { provider: 'openai', modelName: 'gpt-4.1' },
+
   // Anthropic
   'claude-sonnet-4': { provider: 'anthropic', modelName: 'claude-sonnet-4-20250514' },
   'claude-haiku-3.5': { provider: 'anthropic', modelName: 'claude-3-5-haiku-20241022' },
   'claude-opus-4': { provider: 'anthropic', modelName: 'claude-opus-4-20250514' },
+
   // Google
   'gemini-2.0-flash': { provider: 'google', modelName: 'gemini-2.0-flash' },
   'gemini-2.5-flash': { provider: 'google', modelName: 'gemini-2.5-flash' },
   'gemini-2.5-pro': { provider: 'google', modelName: 'gemini-2.5-pro' },
+
+  // xAI (Grok)
+  'grok-4-1-fast': { provider: 'xai', modelName: 'grok-4-1-fast-non-reasoning' },
+  'grok-4-fast': { provider: 'xai', modelName: 'grok-4-fast-non-reasoning' },
+  'grok-3': { provider: 'xai', modelName: 'grok-3' },
+  'grok-3-mini': { provider: 'xai', modelName: 'grok-3-mini' },
+
   // Ollama
   'codellama-7b': { provider: 'ollama', modelName: 'codellama:7b', baseUrl: 'http://localhost:11434' },
   'phi3-mini': { provider: 'ollama', modelName: 'phi3:mini', baseUrl: 'http://localhost:11434' },
   'llama3.2-3b': { provider: 'ollama', modelName: 'llama3.2:3b', baseUrl: 'http://localhost:11434' },
   'gemma2-2b': { provider: 'ollama', modelName: 'gemma2:2b', baseUrl: 'http://localhost:11434' },
+
   // LM Studio
   'lmstudio-llama3.2-1b': { provider: 'lmstudio', modelName: 'llama-3.2-1b-instruct', baseUrl: 'http://localhost:1234' },
   'lmstudio-gemma3n': { provider: 'lmstudio', modelName: 'google/gemma-3n-e4b', baseUrl: 'http://localhost:1234' },
+
   // Fallback
   'llama-3-70b': { provider: 'ollama', modelName: 'llama3:70b', baseUrl: 'http://localhost:11434' },
 };
@@ -145,9 +156,31 @@ async function callGoogle(prompt: string, config: ModelConfig): Promise<string> 
   return data.candidates?.[0]?.content?.parts?.[0]?.text || '';
 }
 
+async function callXAI(prompt: string, config: ModelConfig): Promise<string> {
+  const apiKey = process.env.XAI_API_KEY;
+  if (!apiKey) throw new Error('XAI_API_KEY not set');
+
+  const response = await fetch('https://api.x.ai/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${apiKey}`,
+    },
+    body: JSON.stringify({
+      model: config.modelName,
+      messages: [{ role: 'user', content: prompt }],
+      temperature: 0.3,
+      max_tokens: 300,
+    }),
+  });
+
+  const data = await response.json();
+  return data.choices?.[0]?.message?.content || '';
+}
+
 async function callOllama(prompt: string, config: ModelConfig): Promise<string> {
   const baseUrl = config.baseUrl || 'http://localhost:11434';
-  
+
   const response = await fetch(`${baseUrl}/api/generate`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -164,7 +197,7 @@ async function callOllama(prompt: string, config: ModelConfig): Promise<string> 
 
 async function callLMStudio(prompt: string, config: ModelConfig): Promise<string> {
   const baseUrl = config.baseUrl || 'http://localhost:1234';
-  
+
   const response = await fetch(`${baseUrl}/v1/chat/completions`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -188,13 +221,13 @@ function parseAIResponse(response: string): AIDecision {
       const match = response.match(/```(?:json)?\s*([\s\S]*?)```/);
       if (match) jsonStr = match[1];
     }
-    
+
     const parsed = JSON.parse(jsonStr.trim());
-    
+
     // Validate actions
-    const validActions = (parsed.actions || []).filter((a: { type: string; productId: string; quantity: number }) => 
-      a.type === 'buy' && 
-      typeof a.productId === 'string' && 
+    const validActions = (parsed.actions || []).filter((a: { type: string; productId: string; quantity: number }) =>
+      a.type === 'buy' &&
+      typeof a.productId === 'string' &&
       typeof a.quantity === 'number' &&
       a.quantity > 0 &&
       a.quantity <= 20 &&
@@ -218,17 +251,17 @@ export async function getAIDecision(
   totalDays: number
 ): Promise<AIDecision> {
   const config = MODEL_CONFIGS[modelId];
-  
+
   if (!config) {
     console.warn(`Unknown model: ${modelId}, using random strategy`);
     return { actions: [], reasoning: 'Unknown model' };
   }
 
   const prompt = buildPrompt(state, day, totalDays);
-  
+
   try {
     let response: string;
-    
+
     switch (config.provider) {
       case 'openai':
         response = await callOpenAI(prompt, config);
@@ -238,6 +271,9 @@ export async function getAIDecision(
         break;
       case 'google':
         response = await callGoogle(prompt, config);
+        break;
+      case 'xai':
+        response = await callXAI(prompt, config);
         break;
       case 'ollama':
         response = await callOllama(prompt, config);

@@ -14,7 +14,7 @@ export async function POST(request: NextRequest) {
 
     // Create a new run record
     const { data: run, error: runError } = await supabaseAdmin
-      .from('runs')
+      .from('sb_runs')
       .insert({
         model_id: modelId,
         seed: seed || Math.floor(Math.random() * 100000),
@@ -56,7 +56,7 @@ export async function POST(request: NextRequest) {
       const dayState = engine.simulateDay(actions);
 
       // Save daily metrics
-      await supabaseAdmin.from('daily_metrics').insert({
+      await supabaseAdmin.from('sb_daily_metrics').insert({
         run_id: run.id,
         day: dayState.day,
         cash: dayState.cash,
@@ -72,7 +72,7 @@ export async function POST(request: NextRequest) {
 
     // Update run with final score
     await supabaseAdmin
-      .from('runs')
+      .from('sb_runs')
       .update({
         status: 'completed',
         final_score: results.finalScore,

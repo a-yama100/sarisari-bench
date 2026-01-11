@@ -80,7 +80,7 @@ const faqJsonLd = {
 
 async function getChartData() {
   const { data: runs } = await supabaseAdmin
-    .from('runs')
+    .from('sb_runs')
     .select('id, model_id, seed, final_score')
     .eq('status', 'completed')
     .order('model_id')
@@ -88,7 +88,7 @@ async function getChartData() {
   if (!runs || runs.length === 0) return []
 
   const { data: models } = await supabaseAdmin
-    .from('models')
+    .from('shared_models')
     .select('id, display_name')
 
   const modelMap = new Map(models?.map(m => [m.id, m.display_name]) || [])
@@ -131,14 +131,14 @@ function getProfitPerformanceData(chartData: { modelId: string; name: string; av
 
 async function getModelComparisonData() {
   const { data: runs } = await supabaseAdmin
-    .from('runs')
+    .from('sb_runs')
     .select('id, model_id')
     .eq('status', 'completed')
 
   if (!runs || runs.length === 0) return []
 
   const { data: models } = await supabaseAdmin
-    .from('models')
+    .from('shared_models')
     .select('id, display_name')
 
   const modelMap = new Map(models?.map(m => [m.id, m.display_name]) || [])
@@ -155,7 +155,7 @@ async function getModelComparisonData() {
 
   for (const [modelId, runIds] of Object.entries(runsByModel)) {
     const { data: metrics } = await supabaseAdmin
-      .from('daily_metrics')
+      .from('sb_daily_metrics')
       .select('run_id, day, cash')
       .in('run_id', runIds)
       .order('day')

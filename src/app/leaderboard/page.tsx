@@ -21,12 +21,12 @@ const formatNumber = (value: number | null) => {
 
 export default async function LeaderboardPage() {
   const { data: models } = await supabase
-    .from('models')
+    .from('shared_models')
     .select('id, display_name, provider')
     .order('display_name')
 
   const { data: runStats } = await supabase
-    .from('runs')
+    .from('sb_runs')
     .select('model_id, final_score')
     .eq('status', 'completed')
 

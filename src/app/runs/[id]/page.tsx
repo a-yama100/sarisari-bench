@@ -33,13 +33,13 @@ export default async function RunDetailPage({ params }: { params: Promise<{ id: 
   const { id } = await params;
 
   const { data: run, error: runError } = await supabase
-    .from('runs')
+    .from('sb_runs')
     .select('*, models(display_name, provider)')
     .eq('id', id)
     .single();
 
   const { data: metrics } = await supabase
-    .from('daily_metrics')
+    .from('sb_daily_metrics')
     .select('*')
     .eq('run_id', id)
     .order('day', { ascending: true });

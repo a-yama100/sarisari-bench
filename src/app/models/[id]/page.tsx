@@ -20,7 +20,7 @@ export default async function ModelDetailPage({ params }: Props) {
   const { id } = await params
   
   const { data: model } = await supabase
-    .from('models')
+    .from('shared_models')
     .select('*')
     .eq('id', id)
     .single()
@@ -30,7 +30,7 @@ export default async function ModelDetailPage({ params }: Props) {
   }
 
   const { data: runs } = await supabase
-    .from('runs')
+    .from('sb_runs')
     .select('*')
     .eq('model_id', id)
     .order('started_at', { ascending: false })
