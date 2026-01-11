@@ -34,7 +34,7 @@ export default async function RunDetailPage({ params }: { params: Promise<{ id: 
 
   const { data: run, error: runError } = await supabase
     .from('sb_runs')
-    .select('*, models(display_name, provider)')
+    .select('*, shared_models(display_name, provider)')
     .eq('id', id)
     .single();
 

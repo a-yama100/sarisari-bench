@@ -14,7 +14,7 @@ const formatPeso = (value: number | null) => {
 export default async function RunsPage() {
   const { data: runs } = await supabase
     .from('sb_runs')
-    .select('*, models(display_name)')
+    .select('*, shared_models(display_name)')
     .order('started_at', { ascending: false })
     .limit(50)
 

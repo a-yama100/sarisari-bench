@@ -79,17 +79,26 @@ const faqJsonLd = {
 }
 
 async function getChartData() {
-  const { data: runs } = await supabaseAdmin
+  console.log('=== DEBUG getChartData START ===')
+  
+  const { data: runs, error: runsError } = await supabaseAdmin
     .from('sb_runs')
     .select('id, model_id, seed, final_score')
     .eq('status', 'completed')
     .order('model_id')
 
-  if (!runs || runs.length === 0) return []
+  console.log('Runs count:', runs?.length, 'Runs Error:', runsError)
 
-  const { data: models } = await supabaseAdmin
+  if (!runs || runs.length === 0) {
+    console.log('No runs found')
+    return []
+  }
+
+  const { data: models, error: modelsError } = await supabaseAdmin
     .from('shared_models')
     .select('id, display_name')
+
+  console.log('Models count:', models?.length, 'Models Error:', modelsError)
 
   const modelMap = new Map(models?.map(m => [m.id, m.display_name]) || [])
 
@@ -107,7 +116,7 @@ async function getChartData() {
     }
   }
 
-  return Object.entries(modelScores)
+  const result = Object.entries(modelScores)
     .filter(([, data]) => data.scores.length > 0)
     .map(([modelId, data]) => ({
       modelId,
@@ -116,6 +125,10 @@ async function getChartData() {
       runs: data.scores.length
     }))
     .sort((a, b) => b.avgScore - a.avgScore)
+
+  console.log('Final result count:', result.length)
+  
+  return result
 }
 
 function getProfitPerformanceData(chartData: { modelId: string; name: string; avgScore: number }[]) {
