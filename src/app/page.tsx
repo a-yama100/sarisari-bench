@@ -15,7 +15,7 @@ const jsonLd = {
   "@type": "WebApplication",
   "name": "Sarisari-Bench",
   "description": "An AI agent benchmark for managing a sari-sari store in the Philippines. Measure the ability of models to stay coherent and manage a simulated business over 30 days.",
-  "url": "https://sarisari-bench.phapp.one",
+  "url": "https://sarisari-bench.phtechsolutions.com",
   "applicationCategory": "DeveloperApplication",
   "operatingSystem": "Web",
   "offers": {
