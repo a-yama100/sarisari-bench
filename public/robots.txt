@@ -1,4 +1,4 @@
 ﻿User-agent: *
 Allow: /
 
-Sitemap: https://sarisari-bench.phapp.one/sitemap.xml
+Sitemap: https://sarisari-bench.phtechai.com/sitemap.xml
