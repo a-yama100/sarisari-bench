@@ -1,0 +1,11 @@
+{
+  "model_id": "gemma2-2b",
+  "seeds": 1,
+  "days": 10,
+  "results": [
+    10520
+  ],
+  "average": 10520.0,
+  "min": 10520,
+  "max": 10520
+}

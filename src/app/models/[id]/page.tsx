@@ -33,7 +33,7 @@ export default async function ModelDetailPage({ params }: Props) {
     .from('sb_runs')
     .select('*')
     .eq('model_id', id)
-    .order('started_at', { ascending: false })
+    .order('created_at', { ascending: false })
     .limit(10)
 
   return (
@@ -103,7 +103,7 @@ export default async function ModelDetailPage({ params }: Props) {
                         {formatPeso(run.final_score)}
                       </td>
                       <td className="px-6 py-4 text-right text-gray-500">
-                        {new Date(run.started_at).toLocaleDateString()}
+                        {new Date(run.created_at).toLocaleDateString()}
                       </td>
                     </tr>
                   ))}
