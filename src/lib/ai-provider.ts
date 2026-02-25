@@ -42,6 +42,10 @@ const MODEL_CONFIGS: Record<string, ModelConfig> = {
   'phi3-mini': { provider: 'ollama', modelName: 'phi3:mini', baseUrl: 'http://localhost:11434' },
   'llama3.2-3b': { provider: 'ollama', modelName: 'llama3.2:3b', baseUrl: 'http://localhost:11434' },
   'gemma2-2b': { provider: 'ollama', modelName: 'gemma2:2b', baseUrl: 'http://localhost:11434' },
+  'deepseek-r1-7b': { provider: 'ollama', modelName: 'deepseek-r1:7b', baseUrl: 'http://localhost:11434' },
+  'deepseek-r1-8b': { provider: 'ollama', modelName: 'deepseek-r1:8b', baseUrl: 'http://localhost:11434' },
+  'qwen2.5-coder-7b': { provider: 'ollama', modelName: 'qwen2.5-coder:7b', baseUrl: 'http://localhost:11434' },
+  'lfm2.5-thinking': { provider: 'ollama', modelName: 'lfm2.5-thinking:latest', baseUrl: 'http://localhost:11434' },
 
   // LM Studio
   'lmstudio-llama3.2-1b': { provider: 'lmstudio', modelName: 'llama-3.2-1b-instruct', baseUrl: 'http://localhost:1234' },

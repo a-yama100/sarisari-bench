@@ -1,0 +1,14 @@
+{
+  "id": "2632f85d-52c8-4867-956e-5d3ca7d82ded",
+  "model_id": "codellama-7b",
+  "seed": 123,
+  "horizon_days": 30,
+  "status": "running",
+  "config": {
+    "useAI": true,
+    "initialCash": 10000
+  },
+  "final_score": null,
+  "finished_at": null,
+  "created_at": "2026-02-24T09:53:41.615552+00:00"
+}

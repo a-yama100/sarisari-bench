@@ -1,0 +1,14 @@
+{
+  "id": "cd1b11ae-3e75-4a7d-a102-041beac3af21",
+  "model_id": "claude-sonnet-4",
+  "seed": 123,
+  "horizon_days": 30,
+  "status": "completed",
+  "config": {
+    "useAI": true,
+    "initialCash": 10000
+  },
+  "final_score": 12036,
+  "finished_at": "2026-02-24T09:25:38.276+00:00",
+  "created_at": "2026-02-24T09:21:49.366869+00:00"
+}

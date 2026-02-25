@@ -1,0 +1,14 @@
+{
+  "id": "3fbeb7f0-3572-4e38-bd3a-e8a8a7f38211",
+  "model_id": "grok-3-mini",
+  "seed": 123,
+  "horizon_days": 30,
+  "status": "completed",
+  "config": {
+    "useAI": true,
+    "initialCash": 10000
+  },
+  "final_score": 10700,
+  "finished_at": "2026-02-24T09:37:21.622+00:00",
+  "created_at": "2026-02-24T09:30:45.371928+00:00"
+}

@@ -1,0 +1,37 @@
+[
+  {
+    "model": "phi3-mini",
+    "status": "timeout",
+    "elapsed": 1800.0
+  },
+  {
+    "model": "llama3.2-3b",
+    "status": "completed",
+    "elapsed": 610.7
+  },
+  {
+    "model": "gemma2-2b",
+    "status": "completed",
+    "elapsed": 13.9
+  },
+  {
+    "model": "deepseek-r1-7b",
+    "status": "completed",
+    "elapsed": 12.7
+  },
+  {
+    "model": "deepseek-r1-8b",
+    "status": "completed",
+    "elapsed": 12.7
+  },
+  {
+    "model": "qwen2.5-coder-7b",
+    "status": "completed",
+    "elapsed": 12.6
+  },
+  {
+    "model": "lfm2.5-thinking",
+    "status": "completed",
+    "elapsed": 12.6
+  }
+]

@@ -1,0 +1,14 @@
+{
+  "id": "cae37087-b50c-40d6-86b4-8a03970805ea",
+  "model_id": "gemini-2.0-flash",
+  "seed": 42,
+  "horizon_days": 30,
+  "status": "completed",
+  "config": {
+    "useAI": true,
+    "initialCash": 10000
+  },
+  "final_score": 10808.5,
+  "finished_at": "2026-02-24T07:19:46.868+00:00",
+  "created_at": "2026-02-24T07:18:45.891455+00:00"
+}

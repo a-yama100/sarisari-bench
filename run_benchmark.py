@@ -8,7 +8,7 @@ import argparse
 import sys
 
 # Configuration
-PROD_API_URL = "https://sarisari-bench.phapp.one/api/simulate"
+PROD_API_URL = "https://sarisari-bench.phtechai.com/api/simulate"
 LOCAL_API_URL = "http://localhost:3000/api/simulate"
 
 AVAILABLE_MODELS = [
@@ -26,6 +26,7 @@ AVAILABLE_MODELS = [
     
     # Ollama models
     "codellama-7b", "phi3-mini", "llama3.2-3b", "gemma2-2b",
+    "deepseek-r1-7b", "deepseek-r1-8b", "qwen2.5-coder-7b", "lfm2.5-thinking",
     
     # LM Studio models
     "lmstudio-llama3.2-1b", "lmstudio-gemma3n",
@@ -133,6 +134,20 @@ def main():
         print(f"  Average: {avg:,.0f} PHP")
         print(f"  Min: {min_score:,} PHP")
         print(f"  Max: {max_score:,} PHP")
+
+        # Save locally
+        import json, os
+        from datetime import datetime
+        results_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'results')
+        os.makedirs(results_dir, exist_ok=True)
+        fname = "{}_{}.json".format(args.model, datetime.now().strftime('%Y%m%d_%H%M%S'))
+        local_data = {
+            'model_id': args.model, 'seeds': args.seeds, 'days': args.days,
+            'results': results, 'average': avg, 'min': min_score, 'max': max_score,
+        }
+        with open(os.path.join(results_dir, fname), 'w') as f:
+            json.dump(local_data, f, indent=2)
+        print(f"  Saved locally: results/{fname}")
 
 if __name__ == "__main__":
     main()
