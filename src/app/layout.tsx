@@ -14,9 +14,12 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Sarisari-Bench - AI Agent Benchmark for Store Management",
+  title: {
+    default: "Sarisari-Bench - AI Agent Benchmark for Store Management",
+    template: "%s | Sarisari-Bench",
+  },
   description: "An AI agent benchmark simulating sari-sari store management in the Philippines. Evaluate LLM decision-making over 30-day business scenarios with cash, inventory, and profit metrics.",
-  keywords: ["AI benchmark", "LLM evaluation", "sari-sari store", "Philippines", "agent benchmark", "business simulation", "GPT", "Claude", "Gemini"],
+  keywords: ["AI benchmark", "LLM evaluation", "sari-sari store", "Philippines", "agent benchmark", "business simulation", "GPT", "Claude", "Gemini", "AI decision-making", "store management simulation", "LLM agent"],
   authors: [{ name: "Sarisari-Bench Team" }],
   icons: {
     icon: "/favicon.svg",
