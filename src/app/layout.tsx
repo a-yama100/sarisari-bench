@@ -28,11 +28,11 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Sarisari-Bench - AI Agent Benchmark",
     description: "Evaluate AI models managing a Philippine sari-sari store. 30-day simulation measuring cash management, inventory decisions, and business strategy.",
-    url: "https://sarisari-bench.phtechai.com",
+    url: "https://sarisari.phaiworks.com",
     siteName: "Sarisari-Bench",
     images: [
       {
-        url: "https://sarisari-bench.phtechai.com/images/hero.jpg",
+        url: "https://sarisari.phaiworks.com/images/hero.jpg",
         width: 1200,
         height: 630,
         alt: "Sarisari-Bench - AI Store Management Benchmark",
@@ -45,13 +45,13 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Sarisari-Bench - AI Agent Benchmark",
     description: "Evaluate AI models managing a Philippine sari-sari store over 30 days.",
-    images: ["https://sarisari-bench.phtechai.com/images/hero.jpg"],
+    images: ["https://sarisari.phaiworks.com/images/hero.jpg"],
   },
   robots: {
     index: true,
     follow: true,
   },
-  metadataBase: new URL("https://sarisari-bench.phtechai.com"),
+  metadataBase: new URL("https://sarisari.phaiworks.com"),
 };
 
 const gaId = process.env.NEXT_PUBLIC_GA_ID || ''
