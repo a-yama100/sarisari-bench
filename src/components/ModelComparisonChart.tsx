@@ -128,7 +128,7 @@ export function ModelComparisonChart({ data }: ModelComparisonChartProps) {
           return (
             <button
               key={model.modelId}
-              className="flex items-center gap-1.5 px-2 py-1 rounded hover:bg-gray-100 transition-colors"
+              className="flex items-center gap-1.5 px-2 py-1 rounded hover:bg-gray-100 transition-colors cursor-pointer"
               style={{
                 opacity: hoveredModel && hoveredModel !== model.modelId ? 0.4 : 1
               }}
