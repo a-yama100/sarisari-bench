@@ -112,7 +112,7 @@ export function SimulationForm({ models }: SimulationFormProps) {
         <button
           type="submit"
           disabled={isRunning || !modelId}
-          className="w-full py-2 px-4 bg-orange-500 hover:bg-orange-600 disabled:bg-gray-400 text-white font-medium rounded-md transition-colors"
+          className="w-full py-2 px-4 bg-orange-500 hover:bg-orange-600 disabled:bg-gray-400 text-white font-medium rounded-md transition-colors cursor-pointer disabled:cursor-not-allowed"
         >
           {isRunning ? 'Running Simulation...' : 'Start Simulation'}
         </button>

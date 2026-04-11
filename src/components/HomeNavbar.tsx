@@ -18,7 +18,7 @@ export function HomeNavbar() {
         </nav>
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className="md:hidden p-2 rounded-lg hover:bg-white/20"
+          className="md:hidden p-2 rounded-lg hover:bg-white/20 cursor-pointer"
         >
           <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             {isOpen ? (
