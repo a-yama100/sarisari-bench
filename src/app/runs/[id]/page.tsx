@@ -101,7 +101,7 @@ export default async function RunDetailPage({ params }: { params: Promise<{ id: 
             </span>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 mb-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 mb-8">
             <div>
               <p className="text-sm text-gray-500">Model</p>
               <Link href={"/models/" + typedRun.model_id} className="text-base md:text-lg font-semibold text-blue-600 hover:underline">
@@ -140,7 +140,7 @@ export default async function RunDetailPage({ params }: { params: Promise<{ id: 
           <>
             <RunChartsWrapper metrics={typedMetrics} />
 
-            <div className="grid grid-cols-3 gap-2 md:gap-4 mb-8">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 md:gap-4 mb-8">
               <div className="bg-white rounded-xl shadow p-4 md:p-6 text-center">
                 <p className="text-xs md:text-sm text-gray-500">Total Revenue</p>
                 <p className="text-lg md:text-2xl font-bold text-green-600">{formatPeso(totalRevenue)}</p>
