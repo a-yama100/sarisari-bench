@@ -1,0 +1,13 @@
+Running 3 simulations for claude-haiku-5.5 (30 days each)
+Mode: LOCAL | Strategy: AI
+--------------------------------------------------
+[1/3] Seed 42... Score: 11,100.5 PHP (parse failures: 3)
+[2/3] Seed 123... Error: API error: 502 - {"error":"AI provider failed","details":"Anthropic HTTP 400: Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.","runId":"d2b4a9d4-95f9-442c-8f83-2c40071b62c7","day":7}
+Stopping this model: the API failed.
+--------------------------------------------------
+Results for claude-haiku-5.5:
+  Runs: 1/3
+  Average: 11,100 PHP
+  Min: 11,100.5 PHP
+  Max: 11,100.5 PHP
+  Saved locally: results/claude-haiku-5.5_20261015_142454.json

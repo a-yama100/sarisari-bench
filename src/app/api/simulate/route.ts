@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { SimulationEngine } from '@/lib/simulation';
 import { supabaseAdmin } from '@/lib/supabase';
-import { getAIDecision } from '@/lib/ai-provider';
+import { getAIDecision, AIProviderError } from '@/lib/ai-provider';
 
 export async function POST(request: NextRequest) {
   try {
@@ -38,6 +38,9 @@ export async function POST(request: NextRequest) {
       maxInventorySlots: 100,
     });
 
+    // Days on which the model replied but the reply was not valid JSON (counted, not an error).
+    let parseFailures = 0;
+
     // Run simulation for each day
     for (let day = 1; day <= horizonDays; day++) {
       const state = engine.getCurrentState();
@@ -45,8 +48,23 @@ export async function POST(request: NextRequest) {
       let actions: { type: 'buy'; productId: string; quantity: number }[];
       
       if (useAI) {
-        // Use AI to decide actions
-        const decision = await getAIDecision(modelId, state, day, horizonDays);
+        // Use AI to decide actions. An API failure aborts the run and marks it failed,
+        // so it never shows up as a completed run with an untouched score.
+        let decision;
+        try {
+          decision = await getAIDecision(modelId, state, day, horizonDays);
+        } catch (error) {
+          if (!(error instanceof AIProviderError)) throw error;
+          await supabaseAdmin
+            .from('sb_runs')
+            .update({ status: 'failed', finished_at: new Date().toISOString() })
+            .eq('id', run.id);
+          return NextResponse.json(
+            { error: 'AI provider failed', details: error.message, runId: run.id, day },
+            { status: 502 }
+          );
+        }
+        if (decision.reasoning === 'Failed to parse AI response') parseFailures++;
         actions = decision.actions;
       } else {
         // Fallback to simple random strategy
@@ -86,6 +104,7 @@ export async function POST(request: NextRequest) {
       totalRevenue: results.totalRevenue,
       totalProfit: results.totalProfit,
       totalStockouts: results.totalStockouts,
+      parseFailures,
     });
   } catch (error) {
     console.error('Simulation error:', error);

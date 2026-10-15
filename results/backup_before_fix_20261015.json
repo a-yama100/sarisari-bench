@@ -1,0 +1,83 @@
+{
+  "sb_runs": [
+    {
+      "id": "7201a9f3-b9ec-4e5e-b843-2afba95ed942",
+      "model_id": "claude-haiku-3.5",
+      "seed": 42,
+      "horizon_days": 30,
+      "status": "completed",
+      "config": {
+        "useAI": true,
+        "initialCash": 10000
+      },
+      "final_score": 10000,
+      "finished_at": "2026-02-24T07:20:28.358+00:00",
+      "created_at": "2026-02-24T07:19:50.470097+00:00"
+    },
+    {
+      "id": "11a4f157-13c8-4ba7-b2f0-003f10277d21",
+      "model_id": "claude-haiku-3.5",
+      "seed": 123,
+      "horizon_days": 30,
+      "status": "completed",
+      "config": {
+        "useAI": true,
+        "initialCash": 10000
+      },
+      "final_score": 10000,
+      "finished_at": "2026-02-24T07:26:52.657+00:00",
+      "created_at": "2026-02-24T07:26:21.402478+00:00"
+    },
+    {
+      "id": "1461e71b-6cce-493f-b96d-ffdb77b98f66",
+      "model_id": "claude-haiku-3.5",
+      "seed": 999,
+      "horizon_days": 30,
+      "status": "completed",
+      "config": {
+        "useAI": true,
+        "initialCash": 10000
+      },
+      "final_score": 10000,
+      "finished_at": "2026-02-24T07:27:21.472+00:00",
+      "created_at": "2026-02-24T07:26:56.008807+00:00"
+    },
+    {
+      "id": "681e7690-d278-469e-a713-9f18b6e83402",
+      "model_id": "gemma2-2b",
+      "seed": 300,
+      "horizon_days": 10,
+      "status": "completed",
+      "config": {
+        "useAI": true,
+        "initialCash": 10000
+      },
+      "final_score": 10520,
+      "finished_at": "2026-02-25T07:22:41.73+00:00",
+      "created_at": "2026-02-25T07:18:31.424143+00:00"
+    }
+  ],
+  "tb_benchmark_runs": [
+    {
+      "id": "b2dc6ccc-2cf8-474c-8fa7-b88516a4d270",
+      "model_id": "claude-haiku-3.5",
+      "category_id": "crypto",
+      "status": "completed",
+      "return_pct": -23.33222976289061
+    },
+    {
+      "id": "e094640d-95b6-4d74-8006-3512c1408dea",
+      "model_id": "claude-haiku-3.5",
+      "category_id": "forex",
+      "status": "completed",
+      "return_pct": 1.1387131016888452
+    },
+    {
+      "id": "8659fc3e-df0b-4ca0-a07d-0391cd52505c",
+      "model_id": "claude-haiku-3.5",
+      "category_id": "stock",
+      "status": "completed",
+      "return_pct": -0.7699843871630947
+    }
+  ]
+}

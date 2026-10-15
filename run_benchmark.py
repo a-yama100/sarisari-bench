@@ -8,7 +8,7 @@ import argparse
 import sys
 
 # Configuration
-PROD_API_URL = "https://sarisari-bench.phtechai.com/api/simulate"
+PROD_API_URL = "https://sarisari.phaiworks.com/api/simulate"
 LOCAL_API_URL = "http://localhost:3000/api/simulate"
 
 AVAILABLE_MODELS = [
@@ -17,12 +17,15 @@ AVAILABLE_MODELS = [
     
     # API models - Anthropic
     "claude-sonnet-4", "claude-haiku-3.5", "claude-opus-4",
+    "claude-haiku-5.5", "claude-sonnet-5.5", "claude-opus-5.5", "claude-fable-5.1",
     
     # API models - Google
     "gemini-2.0-flash", "gemini-2.5-flash", "gemini-2.5-pro",
+    "gemini-3.8-flash", "gemini-3.1-pro",
     
     # API models - xAI (Grok)
     "grok-4-1-fast", "grok-4-fast", "grok-3", "grok-3-mini",
+    "grok-4.3", "grok-4.7",
     
     # Ollama models
     "codellama-7b", "phi3-mini", "llama3.2-3b", "gemma2-2b",
@@ -44,7 +47,7 @@ def run_simulation(model_id: str, seed: int, days: int, api_url: str, use_ai: bo
         "useAI": use_ai
     }
     
-    response = requests.post(api_url, json=payload, timeout=600)
+    response = requests.post(api_url, json=payload, timeout=3600)  # thinking models can take 30+ min per 30-day run
     
     if response.status_code != 200:
         raise Exception(f"API error: {response.status_code} - {response.text}")
@@ -60,32 +63,15 @@ def main():
     parser.add_argument("--list", "-l", action="store_true", help="List available models")
     parser.add_argument("--local", action="store_true", help="Use local API (localhost:3000)")
     parser.add_argument("--no-ai", action="store_true", help="Use random strategy instead of AI")
+    parser.add_argument("--seed-list", help="Comma-separated seeds (e.g. 42,123,999 = the seeds of the 2026-02 runs)")
+    parser.add_argument("--api-url", help="Override the API URL (e.g. http://localhost:3222/api/simulate)")
     
     args = parser.parse_args()
     
     if args.list:
         print("Available models:")
-        print("\n  OpenAI:")
-        for m in ["gpt-4o", "gpt-4o-mini", "gpt-4.1-mini", "gpt-4.1"]:
-            print(f"    - {m}")
-        print("\n  Anthropic:")
-        for m in ["claude-sonnet-4", "claude-haiku-3.5", "claude-opus-4"]:
-            print(f"    - {m}")
-        print("\n  Google:")
-        for m in ["gemini-2.0-flash", "gemini-2.5-flash", "gemini-2.5-pro"]:
-            print(f"    - {m}")
-        print("\n  xAI (Grok):")
-        for m in ["grok-4-1-fast", "grok-4-fast", "grok-3", "grok-3-mini"]:
-            print(f"    - {m}")
-        print("\n  Ollama:")
-        for m in ["codellama-7b", "phi3-mini", "llama3.2-3b", "gemma2-2b"]:
-            print(f"    - {m}")
-        print("\n  LM Studio:")
-        for m in ["lmstudio-llama3.2-1b", "lmstudio-gemma3n"]:
-            print(f"    - {m}")
-        print("\n  Other:")
-        for m in ["llama-3-70b"]:
-            print(f"    - {m}")
+        for m in AVAILABLE_MODELS:
+            print(f"  - {m}")
         return
     
     if not args.model:
@@ -98,28 +84,38 @@ def main():
         print("Use --list to see available models")
         sys.exit(1)
     
-    api_url = LOCAL_API_URL if args.local else PROD_API_URL
+    api_url = args.api_url or (LOCAL_API_URL if args.local else PROD_API_URL)
     use_ai = not args.no_ai
-    mode = "LOCAL" if args.local else "PROD"
+    mode = "LOCAL" if (args.local or args.api_url) else "PROD"
     strategy = "AI" if use_ai else "Random"
     
+    if args.seed_list:
+        args.seeds = len(args.seed_list.split(","))
     print(f"Running {args.seeds} simulations for {args.model} ({args.days} days each)")
     print(f"Mode: {mode} | Strategy: {strategy}")
     print("-" * 50)
     
+    if args.seed_list:
+        seeds = [int(x) for x in args.seed_list.split(",")]
+        args.seeds = len(seeds)
+    else:
+        seeds = [args.start_seed + i for i in range(args.seeds)]
+
     results = []
-    for i in range(args.seeds):
-        seed = args.start_seed + i
+    for i, seed in enumerate(seeds):
         print(f"[{i+1}/{args.seeds}] Seed {seed}...", end=" ", flush=True)
         
         try:
             result = run_simulation(args.model, seed, args.days, api_url, use_ai)
             score = result.get("finalScore", 0)
             results.append(score)
-            print(f"Score: {score:,} PHP")
+            print(f"Score: {score:,} PHP (parse failures: {result.get('parseFailures', 0)})")
         except Exception as e:
             print(f"Error: {e}")
             results.append(None)
+            # An API failure (no credits, model unavailable) will repeat on every seed.
+            print("Stopping this model: the API failed.")
+            break
     
     # Summary
     valid_results = [r for r in results if r is not None]

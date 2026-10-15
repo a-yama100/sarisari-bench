@@ -1,0 +1,5 @@
+Running 3 simulations for claude-sonnet-5.5 (30 days each)
+Mode: LOCAL | Strategy: AI
+--------------------------------------------------
+[1/3] Seed 42... Error: API error: 502 - {"error":"AI provider failed","details":"Anthropic HTTP 400: Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.","runId":"5da30c26-04e7-41a9-9cbc-f00b9400d58e","day":28}
+Stopping this model: the API failed.

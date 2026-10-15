@@ -1,0 +1,12 @@
+Running 2 simulations for grok-4.7 (30 days each)
+Mode: LOCAL | Strategy: AI
+--------------------------------------------------
+[1/2] Seed 123... Score: 12,798.5 PHP (parse failures: 0)
+[2/2] Seed 999... Score: 12,778 PHP (parse failures: 0)
+--------------------------------------------------
+Results for grok-4.7:
+  Runs: 2/2
+  Average: 12,788 PHP
+  Min: 12,778 PHP
+  Max: 12,798.5 PHP
+  Saved locally: results/grok-4.7_20261015_145844.json

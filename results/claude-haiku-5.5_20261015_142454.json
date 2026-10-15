@@ -1,0 +1,12 @@
+{
+  "model_id": "claude-haiku-5.5",
+  "seeds": 3,
+  "days": 30,
+  "results": [
+    11100.5,
+    null
+  ],
+  "average": 11100.5,
+  "min": 11100.5,
+  "max": 11100.5
+}

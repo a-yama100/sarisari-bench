@@ -12,7 +12,15 @@ interface ModelConfig {
   modelName: string;
   apiKey?: string;
   baseUrl?: string;
+  // Output cap. Defaults to 300; models that cannot fully turn thinking off need more room.
+  maxTokens?: number;
+  // Provider-specific request fields (thinking / reasoning settings).
+  extra?: Record<string, unknown>;
 }
+
+// Thrown when the API itself fails (HTTP error, no credits, empty reply).
+// The run is aborted instead of being recorded as a model that "did nothing".
+export class AIProviderError extends Error {}
 
 const MODEL_CONFIGS: Record<string, ModelConfig> = {
   // OpenAI
@@ -25,17 +33,29 @@ const MODEL_CONFIGS: Record<string, ModelConfig> = {
   'claude-sonnet-4': { provider: 'anthropic', modelName: 'claude-sonnet-4-20250514' },
   'claude-haiku-3.5': { provider: 'anthropic', modelName: 'claude-3-5-haiku-20241022' },
   'claude-opus-4': { provider: 'anthropic', modelName: 'claude-opus-4-20250514' },
+  // Claude 5 family (2026-10). Haiku/Sonnet can turn thinking off; Opus 5.5 and Fable 5.1 cannot, so they run at the lowest effort.
+  'claude-haiku-5.5': { provider: 'anthropic', modelName: 'claude-haiku-5-5', extra: { thinking: { type: 'disabled' } } },
+  'claude-sonnet-5.5': { provider: 'anthropic', modelName: 'claude-sonnet-5-5', extra: { thinking: { type: 'between_tools' } } },
+  'claude-opus-5.5': { provider: 'anthropic', modelName: 'claude-opus-5-5', maxTokens: 2000, extra: { output_config: { effort: 'low' } } },
+  'claude-fable-5.1': { provider: 'anthropic', modelName: 'claude-fable-5-1', maxTokens: 2000, extra: { output_config: { effort: 'low' } } },
 
   // Google
   'gemini-2.0-flash': { provider: 'google', modelName: 'gemini-2.0-flash' },
   'gemini-2.5-flash': { provider: 'google', modelName: 'gemini-2.5-flash' },
   'gemini-2.5-pro': { provider: 'google', modelName: 'gemini-2.5-pro' },
+  // Gemini 3.x (2026-10). 3.8 Flash can turn thinking off; 3.1 Pro only runs in thinking mode, so it uses the lowest level.
+  // maxTokens 1000: at 300 its replies were cut off mid-JSON (finishReason MAX_TOKENS) on about half the days.
+  'gemini-3.8-flash': { provider: 'google', modelName: 'gemini-3.8-flash', maxTokens: 1000, extra: { thinkingConfig: { thinkingBudget: 0 } } },
+  'gemini-3.1-pro': { provider: 'google', modelName: 'gemini-3.1-pro-preview', maxTokens: 4000, extra: { thinkingConfig: { thinkingLevel: 'low' } } },
 
   // xAI (Grok)
   'grok-4-1-fast': { provider: 'xai', modelName: 'grok-4-1-fast-non-reasoning' },
   'grok-4-fast': { provider: 'xai', modelName: 'grok-4-fast-non-reasoning' },
   'grok-3': { provider: 'xai', modelName: 'grok-3' },
   'grok-3-mini': { provider: 'xai', modelName: 'grok-3-mini' },
+  // Grok 4.x (2026-10). 4.3 can turn reasoning off; 4.7 always reasons (no reasoning_effort setting).
+  'grok-4.3': { provider: 'xai', modelName: 'grok-4.3', extra: { reasoning_effort: 'none' } },
+  'grok-4.7': { provider: 'xai', modelName: 'grok-4.7', maxTokens: 2000 },
 
   // Ollama
   'codellama-7b': { provider: 'ollama', modelName: 'codellama:7b', baseUrl: 'http://localhost:11434' },
@@ -97,6 +117,15 @@ Respond ONLY with valid JSON:
 To skip buying: {"actions": [], "reasoning": "reason"}`;
 }
 
+async function readJson(response: Response, provider: string) {
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    const message = data?.error?.message || JSON.stringify(data).slice(0, 300);
+    throw new AIProviderError(`${provider} HTTP ${response.status}: ${message}`);
+  }
+  return data;
+}
+
 async function callOpenAI(prompt: string, config: ModelConfig): Promise<string> {
   const apiKey = process.env.OPENAI_API_KEY;
   if (!apiKey) throw new Error('OPENAI_API_KEY not set');
@@ -111,11 +140,12 @@ async function callOpenAI(prompt: string, config: ModelConfig): Promise<string> 
       model: config.modelName,
       messages: [{ role: 'user', content: prompt }],
       temperature: 0.3,
-      max_tokens: 300,
+      max_tokens: config.maxTokens ?? 300,
+      ...config.extra,
     }),
   });
 
-  const data = await response.json();
+  const data = await readJson(response, 'OpenAI');
   return data.choices?.[0]?.message?.content || '';
 }
 
@@ -132,13 +162,16 @@ async function callAnthropic(prompt: string, config: ModelConfig): Promise<strin
     },
     body: JSON.stringify({
       model: config.modelName,
-      max_tokens: 300,
+      max_tokens: config.maxTokens ?? 300,
       messages: [{ role: 'user', content: prompt }],
+      ...config.extra,
     }),
   });
 
-  const data = await response.json();
-  return data.content?.[0]?.text || '';
+  const data = await readJson(response, 'Anthropic');
+  // Models that think return a thinking block before the text block.
+  const textBlock = (data.content || []).find((b: { type: string }) => b.type === 'text');
+  return textBlock?.text || '';
 }
 
 async function callGoogle(prompt: string, config: ModelConfig): Promise<string> {
@@ -152,12 +185,15 @@ async function callGoogle(prompt: string, config: ModelConfig): Promise<string> 
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         contents: [{ parts: [{ text: prompt }] }],
+        // Without a cap, Gemini's thinking tokens are unbounded (and billed).
+        generationConfig: { maxOutputTokens: config.maxTokens ?? 300, ...config.extra },
       }),
     }
   );
 
-  const data = await response.json();
-  return data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+  const data = await readJson(response, 'Google');
+  const parts: { text?: string; thought?: boolean }[] = data.candidates?.[0]?.content?.parts || [];
+  return parts.filter(p => !p.thought && p.text).map(p => p.text).join('');
 }
 
 async function callXAI(prompt: string, config: ModelConfig): Promise<string> {
@@ -174,11 +210,12 @@ async function callXAI(prompt: string, config: ModelConfig): Promise<string> {
       model: config.modelName,
       messages: [{ role: 'user', content: prompt }],
       temperature: 0.3,
-      max_tokens: 300,
+      max_tokens: config.maxTokens ?? 300,
+      ...config.extra,
     }),
   });
 
-  const data = await response.json();
+  const data = await readJson(response, 'xAI');
   return data.choices?.[0]?.message?.content || '';
 }
 
@@ -289,9 +326,14 @@ export async function getAIDecision(
         return { actions: [], reasoning: 'Unsupported provider' };
     }
 
+    if (!response.trim()) {
+      throw new AIProviderError(`${modelId}: empty response`);
+    }
     return parseAIResponse(response);
   } catch (error) {
     console.error(`AI call failed for ${modelId}:`, error);
-    return { actions: [], reasoning: `AI error: ${error}` };
+    // API failures abort the run; recording them as "no purchase" made broken runs look valid.
+    if (error instanceof AIProviderError) throw error;
+    throw new AIProviderError(`${modelId}: ${error}`);
   }
 }
