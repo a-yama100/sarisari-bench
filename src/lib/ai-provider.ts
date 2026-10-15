@@ -34,8 +34,9 @@ const MODEL_CONFIGS: Record<string, ModelConfig> = {
   'claude-haiku-3.5': { provider: 'anthropic', modelName: 'claude-3-5-haiku-20241022' },
   'claude-opus-4': { provider: 'anthropic', modelName: 'claude-opus-4-20250514' },
   // Claude 5 family (2026-10). Haiku/Sonnet can turn thinking off; Opus 5.5 and Fable 5.1 cannot, so they run at the lowest effort.
-  'claude-haiku-5.5': { provider: 'anthropic', modelName: 'claude-haiku-5-5', extra: { thinking: { type: 'disabled' } } },
-  'claude-sonnet-5.5': { provider: 'anthropic', modelName: 'claude-sonnet-5-5', extra: { thinking: { type: 'between_tools' } } },
+  // maxTokens 1000: their JSON replies run to 200-300 tokens, so 300 cut some of them off.
+  'claude-haiku-5.5': { provider: 'anthropic', modelName: 'claude-haiku-5-5', maxTokens: 1000, extra: { thinking: { type: 'disabled' } } },
+  'claude-sonnet-5.5': { provider: 'anthropic', modelName: 'claude-sonnet-5-5', maxTokens: 1000, extra: { thinking: { type: 'between_tools' } } },
   'claude-opus-5.5': { provider: 'anthropic', modelName: 'claude-opus-5-5', maxTokens: 2000, extra: { output_config: { effort: 'low' } } },
   'claude-fable-5.1': { provider: 'anthropic', modelName: 'claude-fable-5-1', maxTokens: 2000, extra: { output_config: { effort: 'low' } } },
 

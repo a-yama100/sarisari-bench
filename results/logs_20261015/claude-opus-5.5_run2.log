@@ -1,0 +1,14 @@
+Running 3 simulations for claude-opus-5.5 (30 days each)
+Mode: LOCAL | Strategy: AI
+--------------------------------------------------
+[1/3] Seed 42... Score: 13,229 PHP (parse failures: 0)
+[2/3] Seed 123... Score: 13,662 PHP (parse failures: 0)
+[3/3] Seed 999... Error: API error: 502 - {"error":"AI provider failed","details":"Anthropic HTTP 400: Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.","runId":"12456fdb-b44c-4675-a361-aeda2b4348b4","day":30}
+Stopping this model: the API failed.
+--------------------------------------------------
+Results for claude-opus-5.5:
+  Runs: 2/3
+  Average: 13,446 PHP
+  Min: 13,229 PHP
+  Max: 13,662 PHP
+  Saved locally: results/claude-opus-5.5_20261015_151756.json

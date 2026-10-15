@@ -1,0 +1,13 @@
+{
+  "model_id": "claude-opus-5.5",
+  "seeds": 3,
+  "days": 30,
+  "results": [
+    13229,
+    13662,
+    null
+  ],
+  "average": 13445.5,
+  "min": 13229,
+  "max": 13662
+}

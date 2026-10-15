@@ -1,0 +1,13 @@
+Running 3 simulations for claude-haiku-5.5 (30 days each)
+Mode: LOCAL | Strategy: AI
+--------------------------------------------------
+[1/3] Seed 42... Score: 11,341 PHP (parse failures: 2)
+[2/3] Seed 123... Score: 11,396 PHP (parse failures: 0)
+[3/3] Seed 999... Score: 11,248 PHP (parse failures: 5)
+--------------------------------------------------
+Results for claude-haiku-5.5:
+  Runs: 3/3
+  Average: 11,328 PHP
+  Min: 11,248 PHP
+  Max: 11,396 PHP
+  Saved locally: results/claude-haiku-5.5_20261015_151324.json
