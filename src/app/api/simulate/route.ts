@@ -2,14 +2,46 @@ import { NextRequest, NextResponse } from 'next/server';
 import { SimulationEngine } from '@/lib/simulation';
 import { supabaseAdmin } from '@/lib/supabase';
 import { getAIDecision, AIProviderError } from '@/lib/ai-provider';
+import { rateLimit, clientIp, TOO_MANY } from '@/lib/security/rateLimit';
+
+// 1 回の実行で AI の API を日数分呼ぶ（有料）ので、受け付ける値の幅を決めておく
+const MAX_HORIZON_DAYS = 30;
+const MAX_INITIAL_CASH = 10_000_000;
+const MAX_MODEL_ID_LENGTH = 100;
 
 export async function POST(request: NextRequest) {
   try {
+    // 環境変数 SIMULATE_API_TOKEN を設定したときは、x-simulate-token が一致する呼び出しだけ受け付ける
+    const token = process.env.SIMULATE_API_TOKEN;
+    if (token && request.headers.get('x-simulate-token') !== token) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    // 回数制限: 同じ IP から 1 時間に 60 回まで（AI の API の料金を使い込まれないように）
+    if (!(await rateLimit('simulate:ip:' + clientIp(request), 3600, 60))) {
+      return NextResponse.json(TOO_MANY, { status: 429 });
+    }
+
     const body = await request.json();
     const { modelId, seed, horizonDays = 30, initialCash = 10000, useAI = true } = body;
 
     if (!modelId) {
       return NextResponse.json({ error: 'modelId is required' }, { status: 400 });
+    }
+    if (typeof modelId !== 'string' || modelId.length > MAX_MODEL_ID_LENGTH) {
+      return NextResponse.json({ error: 'Invalid modelId' }, { status: 400 });
+    }
+    if (!Number.isInteger(horizonDays) || horizonDays < 1 || horizonDays > MAX_HORIZON_DAYS) {
+      return NextResponse.json({ error: 'horizonDays must be an integer from 1 to ' + MAX_HORIZON_DAYS }, { status: 400 });
+    }
+    if (typeof initialCash !== 'number' || !Number.isFinite(initialCash) || initialCash <= 0 || initialCash > MAX_INITIAL_CASH) {
+      return NextResponse.json({ error: 'Invalid initialCash' }, { status: 400 });
+    }
+    if (seed !== undefined && seed !== null && (!Number.isInteger(seed) || seed < 0 || seed > 2147483647)) {
+      return NextResponse.json({ error: 'Invalid seed' }, { status: 400 });
+    }
+    if (typeof useAI !== 'boolean') {
+      return NextResponse.json({ error: 'Invalid useAI' }, { status: 400 });
     }
 
     // Create a new run record
@@ -27,7 +59,8 @@ export async function POST(request: NextRequest) {
 
     if (runError || !run) {
       console.error('Run creation error:', runError);
-      return NextResponse.json({ error: 'Failed to create run', details: runError }, { status: 500 });
+      // DB のエラーの中身は返さない（ログにだけ残す）
+      return NextResponse.json({ error: 'Failed to create run' }, { status: 500 });
     }
 
     // Initialize simulation engine

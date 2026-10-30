@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+import { useId, useState } from 'react';
 
 interface SimulationFormProps {
   models: { id: string; display_name: string }[];
@@ -21,6 +21,8 @@ export function SimulationForm({ models }: SimulationFormProps) {
   const [isRunning, setIsRunning] = useState(false);
   const [result, setResult] = useState<SimulationResult | null>(null);
   const [error, setError] = useState('');
+  // label と入力欄を結ぶ id
+  const fieldId = useId();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -63,10 +65,12 @@ export function SimulationForm({ models }: SimulationFormProps) {
       
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor={fieldId + "-model"} className="block text-sm font-medium text-gray-700 mb-1">
             AI Model
           </label>
           <select
+            id={fieldId + "-model"}
+            name="model"
             value={modelId}
             onChange={(e) => setModelId(e.target.value)}
             required
@@ -82,23 +86,29 @@ export function SimulationForm({ models }: SimulationFormProps) {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor={fieldId + "-seed"} className="block text-sm font-medium text-gray-700 mb-1">
             Seed (optional)
           </label>
           <input
+            id={fieldId + "-seed"}
+            name="seed"
             type="number"
             value={seed}
             onChange={(e) => setSeed(e.target.value)}
             placeholder="Random if empty"
+            min={0}
+            max={2147483647}
             className="w-full px-3 py-2 border border-gray-300 rounded-md bg-white text-gray-900"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor={fieldId + "-days"} className="block text-sm font-medium text-gray-700 mb-1">
             Simulation Days
           </label>
           <select
+            id={fieldId + "-days"}
+            name="days"
             value={horizonDays}
             onChange={(e) => setHorizonDays(e.target.value)}
             className="w-full px-3 py-2 border border-gray-300 rounded-md bg-white text-gray-900"

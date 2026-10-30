@@ -47,7 +47,11 @@ def run_simulation(model_id: str, seed: int, days: int, api_url: str, use_ai: bo
         "useAI": use_ai
     }
     
-    response = requests.post(api_url, json=payload, timeout=3600)  # thinking models can take 30+ min per 30-day run
+    # サイト側で SIMULATE_API_TOKEN を設定したときは、同じ値を環境変数で渡す
+    import os
+    token = os.environ.get("SIMULATE_API_TOKEN")
+    headers = {"x-simulate-token": token} if token else {}
+    response = requests.post(api_url, json=payload, headers=headers, timeout=3600)  # thinking models can take 30+ min per 30-day run
     
     if response.status_code != 200:
         raise Exception(f"API error: {response.status_code} - {response.text}")

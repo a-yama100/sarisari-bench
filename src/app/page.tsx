@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { jsonLd as toJsonLd } from '@/lib/security/escapeHtml'
 import Image from 'next/image'
 import { supabaseAdmin } from '@/lib/supabase'
 import { ModelComparisonChart } from '@/components/ModelComparisonChart'
@@ -236,11 +237,11 @@ export default async function Home() {
     <main className="min-h-screen bg-white text-gray-900 flex flex-col">
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        dangerouslySetInnerHTML={{ __html: toJsonLd(jsonLd) }}
       />
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: toJsonLd(faqJsonLd) }}
       />
       <div className="flex-1">
         <div className="p-2 md:p-4">

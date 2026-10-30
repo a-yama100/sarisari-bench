@@ -3,7 +3,7 @@ import { Navbar } from '@/components/Navbar'
 import { Footer } from '@/components/Footer'
 
 export const metadata = {
-  title: 'Privacy Policy - Sarisari-Bench',
+  title: 'Privacy Policy',
   description: 'Privacy policy for Sarisari-Bench AI agent benchmark platform.',
 }
 

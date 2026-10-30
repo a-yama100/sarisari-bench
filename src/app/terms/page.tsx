@@ -3,7 +3,7 @@ import { Navbar } from '@/components/Navbar'
 import { Footer } from '@/components/Footer'
 
 export const metadata = {
-  title: 'Terms of Service - Sarisari-Bench',
+  title: 'Terms of Service',
   description: 'Terms of service for Sarisari-Bench AI agent benchmark platform.',
 }
 
